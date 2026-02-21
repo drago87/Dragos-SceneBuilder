@@ -1,0 +1,34 @@
+{
+	"_meta": {
+		"display_name": "Style"
+	},
+
+	"medium": [
+		"photograph",
+		"digital art",
+		"painting",
+		"illustration",
+		"render"
+	],
+
+	"quality": [
+		"low",
+		"medium",
+		"high",
+		"ultra",
+		"masterpiece"
+	],
+
+	"detail": [
+		"simple",
+		"detailed",
+		"highly detailed",
+		"hyper detailed"
+	],
+
+	"realism": [
+		"stylized",
+		"semi-realistic",
+		"photorealistic"
+	]
+}

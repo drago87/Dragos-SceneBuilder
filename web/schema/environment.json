@@ -1,0 +1,130 @@
+{
+	"_meta": {
+		"display_name": "Environment"
+	},
+
+	"location": [
+		"indoors",
+		"outdoors",
+		"studio",
+		"bedroom",
+		"forest",
+		"beach",
+		"city",
+		"fantasy",
+		"sci-fi"
+	],
+
+	"setting": "string",
+
+	"time_of_day": [
+		"morning",
+		"noon",
+		"afternoon",
+		"evening",
+		"night",
+		"sunset",
+		"sunrise"
+	],
+
+	"weather": [
+		"clear",
+		"cloudy",
+		"rain",
+		"snow",
+		"fog",
+		"storm"
+	],
+
+	"lighting": {
+
+		"type": [
+			"natural",
+			"studio",
+			"soft",
+			"hard",
+			"dramatic",
+			"cinematic",
+			"volumetric"
+		],
+
+		"direction": [
+			"front",
+			"side",
+			"back",
+			"top",
+			"bottom"
+		],
+
+		"color": [
+			"neutral",
+			"warm",
+			"cool",
+			"mixed"
+		]
+	},
+
+	"foreground": {
+
+		"elements": "string",
+
+		"depth": [
+			"close",
+			"medium",
+			"far"
+		],
+
+		"blur": [
+			"none",
+			"slight",
+			"strong"
+		]
+	},
+
+	"background": {
+
+		"type": [
+			"plain",
+			"nature",
+			"urban",
+			"interior",
+			"studio",
+			"fantasy",
+			"sci-fi"
+		],
+
+		"elements": "string",
+
+		"depth": [
+			"shallow",
+			"medium",
+			"deep"
+		],
+
+		"blur": [
+			"none",
+			"slight",
+			"strong"
+		]
+	},
+
+	"atmosphere": {
+
+		"effects": [
+			"none",
+			"fog",
+			"mist",
+			"smoke",
+			"dust",
+			"rain",
+			"snow"
+		],
+
+		"particles": [
+			"none",
+			"dust",
+			"sparkles",
+			"embers"
+		]
+	}
+}

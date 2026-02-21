@@ -1,0 +1,89 @@
+{
+	"_meta": {
+		"display_name": "Character - Female",
+		"gender": "Female"
+	},
+	"name":"string",
+	"age":"",
+	"placement": {
+		"frame_position": [
+			"center",
+			"left",
+			"right",
+			"top",
+			"bottom",
+			"top-left",
+			"top-right",
+			"bottom-left",
+			"bottom-right"
+		],
+		"proximity_to_camera": [
+			"foreground",
+			"midground",
+			"background",
+			"close",
+			"medium",
+			"far"
+		],
+		"orientation": [
+			"facing camera",
+			"facing left",
+			"facing right",
+			"facing away",
+			"profile left",
+			"profile right",
+			"three-quarter left",
+			"three-quarter right"
+		],
+		"relative_to":  ""
+    },
+	"anatomy": {
+		"mons_pubis": {
+			"size":["small","medium","large"],
+			"shape":["flat","rounded","prominent"],
+			"hair": {
+				"presence":["yes","no"],
+				"density":["sparse","moderate","dense"],
+				"distribution":["none","central","full","wide"],
+				"color":["blonde","brown","black","red","gray","other"]
+			}
+		},
+		"labia_majora": {
+			"size":["small","medium","large"],
+			"thickness":["thin","average","thick"],
+			"symmetry":["symmetric","slightly asymmetric","asymmetric"],
+			"shape":["slit","rounded","full"],
+			"fullness":["flat","moderate","full"],
+			"texture":["smooth","soft","wrinkled"]
+		},
+		"labia_minora": {
+			"size":["small","medium","large"],
+			"length":["short","average","long"],
+			"protrusion":["none","slight","moderate","prominent"],
+			"symmetry":["symmetric","slightly asymmetric","asymmetric"],
+			"shape":["slit","rounded","elongated"],
+			"visibility":["hidden","partially visible","visible"],
+			"texture":["smooth","soft","wrinkled"]
+		},
+		"clitoris": {
+			"visibility":["hidden","partially visible","visible"],
+			"size":["small","medium","large"],
+			"hood": {
+				"coverage":["fully covered","partially covered","exposed"],
+				"size":["small","medium","large"],
+				"shape":["rounded","pointed","elongated"]
+			}
+		},
+		"breasts": {
+			"size":["flat","small","medium","large"],
+			"shape":["round","teardrop","wide","narrow"],
+			"symmetry":["symmetric","slightly asymmetric","asymmetric"]
+		}
+	},
+	"actions":{
+		"primary":"string",
+		"secondary":"string",
+		"tertiary":"string",
+		"quaternary":"string"
+	}
+}

@@ -1,0 +1,132 @@
+{
+	"_meta": {
+		"display_name": "Camera"
+	},
+
+	"device": {
+
+		"type": [
+			"",
+			"DSLR",
+			"mirrorless",
+			"cinema",
+			"phone",
+			"film"
+		],
+
+		"model": [
+			"",
+			"Canon EOS R5",
+			"Sony A7R V",
+			"Nikon Z9",
+			"ARRI Alexa",
+			"RED Komodo",
+			"iPhone",
+			"other"
+		]
+	},
+
+	"lens": {
+
+		"focal_length": [
+			"",
+			"14mm",
+			"24mm",
+			"35mm",
+			"50mm",
+			"85mm",
+			"135mm",
+			"200mm"
+		],
+
+		"type": [
+			"",
+			"wide",
+			"standard",
+			"telephoto",
+			"macro",
+			"portrait"
+		]
+	},
+
+	"position": {
+
+		"angle": [
+			"front",
+			"side",
+			"rear",
+			"top",
+			"bottom",
+			"high angle",
+			"low angle",
+			"eye level"
+		],
+
+		"distance": [
+			"extreme close-up",
+			"close-up",
+			"medium shot",
+			"full body",
+			"wide shot",
+			"long shot"
+		],
+
+		"tilt": [
+			"none",
+			"dutch angle",
+			"tilted up",
+			"tilted down"
+		]
+	},
+
+	"focus": {
+
+		"type": [
+			"sharp",
+			"soft",
+			"shallow depth of field",
+			"deep depth of field"
+		],
+
+		"target": [
+			"eyes",
+			"face",
+			"body",
+			"foreground",
+			"background"
+		]
+	},
+
+	"exposure": {
+
+		"aperture": [
+			"",
+			"f/1.4",
+			"f/2",
+			"f/2.8",
+			"f/4",
+			"f/5.6",
+			"f/8",
+			"f/11"
+		],
+
+		"iso": [
+			"",
+			"100",
+			"200",
+			"400",
+			"800",
+			"1600",
+			"3200"
+		],
+
+		"shutter": [
+			"",
+			"1/60",
+			"1/125",
+			"1/250",
+			"1/500",
+			"1/1000"
+		]
+	}
+}

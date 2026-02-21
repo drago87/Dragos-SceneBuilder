@@ -1,0 +1,58 @@
+{
+	"_meta": {
+		"display_name": "Character - Male",
+		"gender": "Male"
+	},
+	"name":"string",
+	"age":"",
+	"placement": {
+		"frame_position": [
+			"center",
+			"left",
+			"right",
+			"top",
+			"bottom",
+			"top-left",
+			"top-right",
+			"bottom-left",
+			"bottom-right"
+		],
+		"proximity_to_camera": [
+			"foreground",
+			"midground",
+			"background",
+			"close",
+			"medium",
+			"far"
+		],
+		"orientation": [
+			"facing camera",
+			"facing left",
+			"facing right",
+			"facing away",
+			"profile left",
+			"profile right",
+			"three-quarter left",
+			"three-quarter right"
+		],
+		"relative_to":  ""
+    },
+	"anatomy": {
+		"gentile": {
+			"size": [
+				"small",
+				"average",
+				"large"
+			],
+			"body_hair":["none","sparse","moderate","dense"]
+		},
+		
+		"musculature":["slim","average","athletic","muscular"]
+	},
+	"actions":{
+		"primary":"string",
+		"secondary":"string",
+		"tertiary":"string",
+		"quaternary":"string"
+	}
+}
