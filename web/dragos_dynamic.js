@@ -30,13 +30,9 @@ function getValueRecursive(node, graph)
 	if (!node) return undefined;
 	if (!isNodeActive(node)) return undefined;
 
-	// DragosVariable
 	if (node.comfyClass === "DragosVariable")
-	{
 		return getWidgetValue(node, ["text"]) ?? "";
-	}
 
-	// DragosStructuredBuilder
 	if (node.comfyClass === "DragosStructuredBuilder")
 	{
 		const result = {};
@@ -66,7 +62,6 @@ function getValueRecursive(node, graph)
 		return result;
 	}
 
-	// DragosObject
 	if (node.comfyClass === "DragosObject")
 	{
 		const result = {};
@@ -97,7 +92,8 @@ function getValueRecursive(node, graph)
 	return undefined;
 }
 
-function refreshNode(node, graph, previewWidget)
+
+function refreshNode(node, graph, previewWidget, syncPreviewHeight)
 {
 	if (!node.inputs) return;
 
@@ -119,7 +115,6 @@ function refreshNode(node, graph, previewWidget)
 
 			let key = null;
 
-			// StructuredBuilder handling
 			if (origin.comfyClass === "DragosStructuredBuilder")
 			{
 				const categoryWidget =
@@ -128,17 +123,11 @@ function refreshNode(node, graph, previewWidget)
 				const category = categoryWidget?.value;
 
 				if (category === "camera")
-				{
 					key = "camera";
-				}
 				else if (category && category.startsWith("character"))
-				{
 					key = `character_${characterCount++}`;
-				}
 				else
-				{
 					key = category ?? input.name;
-				}
 			}
 			else
 			{
@@ -156,7 +145,12 @@ function refreshNode(node, graph, previewWidget)
 		const json = JSON.stringify(scene, null, "\t");
 
 		if (previewWidget.value !== json)
+		{
 			previewWidget.value = json;
+
+			if (syncPreviewHeight)
+				syncPreviewHeight();
+		}
 	}
 
 	// dynamic input slots
@@ -185,6 +179,8 @@ function refreshNode(node, graph, previewWidget)
 	}
 }
 
+
+
 app.registerExtension({
 
 	name: "Dragos.SceneBuilder.Dynamic",
@@ -198,6 +194,7 @@ app.registerExtension({
 		) return;
 
 		let previewWidget = null;
+		let syncPreviewHeight = null;
 
 		if (node.comfyClass === "DragosSceneCompiler")
 		{
@@ -211,15 +208,96 @@ app.registerExtension({
 
 			previewWidget.inputEl.readOnly = true;
 			previewWidget.inputEl.style.fontSize = "11px";
-			previewWidget.inputEl.style.height = "180px";
+			previewWidget.inputEl.style.resize = "none";
+
+
+			syncPreviewHeight = function()
+			{
+				if (!previewWidget?.inputEl) return;
+				if (!node.size) return;
+
+				const HEADER = LiteGraph.NODE_TITLE_HEIGHT || 30;
+				const SLOT = LiteGraph.NODE_SLOT_HEIGHT || 20;
+				const PADDING = 10;
+
+				let widgetY = HEADER;
+
+				for (const w of node.widgets)
+				{
+					if (w === previewWidget) break;
+
+					const size = w.computeSize?.(node.size[0]);
+					widgetY += (size?.[1] || SLOT) + 4;
+				}
+
+				const inputsHeight =
+					(node.inputs?.length || 0) * SLOT;
+
+				const available =
+					node.size[1]
+					- widgetY
+					- inputsHeight
+					- PADDING;
+
+				previewWidget.inputEl.style.height =
+					Math.max(available, 50) + "px";
+			};
+
+
+			const origOnResize = node.onResize;
+
+			node.onResize = function()
+			{
+				if (origOnResize)
+					origOnResize.apply(this, arguments);
+
+				syncPreviewHeight();
+			};
+
+
+						// force correct node size first
+			requestAnimationFrame(() =>
+			{
+				if (node.computeSize)
+				{
+					const newSize = node.computeSize();
+					node.setSize(newSize);
+				}
+			
+				syncPreviewHeight();
+			
+				node.setDirtyCanvas(true, true);
+			});
+			
+			setTimeout(() =>
+			{
+				if (node.computeSize)
+				{
+					const newSize = node.computeSize();
+					node.setSize(newSize);
+				}
+			
+				syncPreviewHeight();
+			
+				node.setDirtyCanvas(true, true);
+			
+			}, 100);
 		}
+
 
 		const graph = app.graph;
 
 		const update = () =>
-			refreshNode(node, graph, previewWidget);
+			refreshNode(
+				node,
+				graph,
+				previewWidget,
+				syncPreviewHeight
+			);
+
 
 		const origConnectionsChange = node.onConnectionsChange;
+
 		node.onConnectionsChange = function ()
 		{
 			if (origConnectionsChange)
@@ -228,7 +306,9 @@ app.registerExtension({
 			update();
 		};
 
+
 		const origWidgetChanged = node.onWidgetChanged;
+
 		node.onWidgetChanged = function ()
 		{
 			if (origWidgetChanged)
@@ -236,6 +316,7 @@ app.registerExtension({
 
 			update();
 		};
+
 
 		const timer = setInterval(() =>
 		{
@@ -248,6 +329,7 @@ app.registerExtension({
 			update();
 
 		}, 500);
+
 
 		update();
 	}
