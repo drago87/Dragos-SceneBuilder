@@ -1,9 +1,100 @@
 import json
 import os
+import re
 
 PROMPT_VAR_TYPE = "PROMPT_VAR"
 
 SCHEMA_DIR = os.path.join(os.path.dirname(__file__), "web", "schema")
+
+PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "web", "prompts")
+
+
+def load_prompt_files():
+
+    files = []
+
+    for f in os.listdir(PROMPTS_DIR):
+        if f.endswith(".txt"):
+            files.append(os.path.splitext(f)[0])
+
+    return sorted(files)
+
+
+def parse_prompt_file(content: str):
+    """
+    Parses a prompt file and returns (info, prompt)
+    
+    Supported formats:
+
+    Format1:
+        <info>...</info>
+        <prompt>...</prompt>
+
+    Format2:
+        <info>...</info>
+        raw text
+
+    Format3:
+        <prompt>...</prompt>
+
+    Format4:
+        raw text
+    """
+
+    info = ""
+    prompt = content.strip()
+
+    # Extract <info> block if present
+    info_match = re.search(r"<info>([\s\S]*?)</info>", content, re.IGNORECASE)
+    if info_match:
+        info = info_match.group(1).strip()
+
+    # Extract <prompt> block if present
+    prompt_match = re.search(r"<prompt>([\s\S]*?)</prompt>", content, re.IGNORECASE)
+    if prompt_match:
+        prompt = prompt_match.group(1).strip()
+    elif info_match:
+        # remove info block if present
+        prompt = content.replace(info_match.group(0), "").strip()
+    else:
+        # fallback: use entire content
+        prompt = content.strip()
+
+    return info, prompt
+
+
+class DragosPromptLoaderNode:
+
+    CATEGORY = "DragosScene"
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "load_prompt"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "prompt": (load_prompt_files(),),
+            },
+            "optional": {
+                "info_text": ("STRING", {"multiline": True, "default": ""}),
+                "prompt_text": ("STRING", {"multiline": True, "default": ""}),
+            }
+        }
+
+    def load_prompt(self, prompt, info_text="", prompt_text=""):
+        path = os.path.join(PROMPTS_DIR, prompt + ".txt")
+
+        content = ""
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read()
+
+        info, parsed_prompt = parse_prompt_file(content)
+
+        # prioritize edited textbox
+        final_prompt = prompt_text.strip() if prompt_text.strip() else parsed_prompt
+
+        return (final_prompt,)
 
 
 def load_schema_categories():
@@ -123,30 +214,31 @@ class DragosSceneCompiler:
         """Recursively unwrap tuples from ComfyUI PROMPT_VAR_TYPE nodes."""
         depth = 0
         while isinstance(v, tuple) and len(v) == 1:
-            print(f"[unwrap] depth {depth}: tuple -> {v}")
+            #print(f"[unwrap] depth {depth}: tuple -> {v}")
             v = v[0]
             depth += 1
-        print(f"[unwrap] final value: {v}")
+        #print(f"[unwrap] final value: {v}")
         return v
 
     def compile_json(self, **kwargs):
         scene = {}
 
-        print("=== DragosSceneCompiler: compile_json ===")
+        #print("=== DragosSceneCompiler: compile_json ===")
         for key, v in kwargs.items():
-            print(f"Input '{key}' raw value: {v}")
+            #print(f"Input '{key}' raw value: {v}")
             unwrapped = self._unwrap_prompt_var(v)
-            print(f"Input '{key}' unwrapped: {unwrapped}")
+            #print(f"Input '{key}' unwrapped: {unwrapped}")
 
             if isinstance(unwrapped, dict) and "name" in unwrapped and "value" in unwrapped:
                 scene[unwrapped["name"]] = unwrapped["value"]
-                print(f"Added to scene: {unwrapped['name']} -> {unwrapped['value']}")
+                #print(f"Added to scene: {unwrapped['name']} -> {unwrapped['value']}")
             else:
-                print(f"Skipped input '{key}': not a valid prompt var")
+                #print(f"Skipped input '{key}': not a valid prompt var")
+                pass
 
         json_out = json.dumps(scene, indent="\t", ensure_ascii=False)
-        print("=== compile_json result ===")
-        print(json_out)
+        #print("=== compile_json result ===")
+        #print(json_out)
         return (json_out,)
 
 class DragosStructuredBuilderNode:
