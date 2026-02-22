@@ -43,65 +43,77 @@ function parsePrompt(content) {
 app.registerExtension({
     name: "Dragos.PromptLoader",
 
-    nodeCreated(node) {
-        console.debug("[Dragos.PromptLoader] nodeCreated called for node:", node);
-
-        // Wait a tick to ensure widgets exist
-        setTimeout(async () => {
-            const promptDropdown = node.widgets.find(w => w.name === "prompt");
-
-            if (!promptDropdown) {
-                console.debug("[Dragos.PromptLoader] No prompt dropdown found!");
-                return;
-            }
-
-            // Create info_text widget if missing
-            let infoWidget = node.widgets.find(w => w.name === "info_text");
-            if (!infoWidget) {
-                infoWidget = node.addWidget("text", "info_text", "", () => {});
-                infoWidget.hidden = false;
-            }
-
-            // Create prompt_text widget if missing
-            let promptWidget = node.widgets.find(w => w.name === "prompt_text");
-            if (!promptWidget) {
-                promptWidget = node.addWidget("text", "prompt_text", "", () => {});
-                promptWidget.hidden = false;
-            }
-
-            // Update widgets and hidden inputs
-			async function updateInputs(promptName) {
+	nodeCreated(node)
+	{
+		// Only affect DragosPromptLoaderNode
+		if (node.comfyClass !== "DragosPromptLoaderNode")
+			return;
+	
+		setTimeout(async () =>
+		{
+			const promptDropdown =
+				node.widgets?.find(w => w.name === "prompt");
+	
+			if (!promptDropdown)
+				return;
+	
+			let infoWidget =
+				node.widgets.find(w => w.name === "info_text");
+	
+			if (!infoWidget)
+			{
+				infoWidget =
+					node.addWidget("text", "info_text", "", () => {});
+	
+				infoWidget.hidden = false;
+			}
+	
+			let promptWidget =
+				node.widgets.find(w => w.name === "prompt_text");
+	
+			if (!promptWidget)
+			{
+				promptWidget =
+					node.addWidget("text", "prompt_text", "", () => {});
+	
+				promptWidget.hidden = false;
+			}
+	
+			async function updateInputs(promptName)
+			{
 				if (!promptName) return;
-				console.debug("[Dragos.PromptLoader] updateInputs called with:", promptName);
-			
-				const { info, prompt } = await loadPromptFile(promptName);
-			
-				// Update visible widgets
-				if (infoWidget) infoWidget.value = info;
-				if (promptWidget) promptWidget.value = prompt;
-			
-				// Update hidden node inputs if present
-				const infoInput = node.inputs.find(i => i.name === "info_text");
-				const promptInput = node.inputs.find(i => i.name === "prompt_text");
+	
+				const { info, prompt } =
+					await loadPromptFile(promptName);
+	
+				infoWidget.value = info;
+				promptWidget.value = prompt;
+	
+				const infoInput =
+					node.inputs?.find(i => i.name === "info_text");
+	
+				const promptInput =
+					node.inputs?.find(i => i.name === "prompt_text");
+	
 				if (infoInput) infoInput.value = info;
 				if (promptInput) promptInput.value = prompt;
-			
-				// Trigger graph refresh
-				if (node.graph?.setDirtyCanvas) node.graph.setDirtyCanvas(true, true);
+	
+				node.graph?.setDirtyCanvas(true, true);
 			}
-
-            // Hook dropdown callback
-            const oldCallback = promptDropdown.callback;
-            promptDropdown.callback = async function(value) {
-                if (oldCallback) oldCallback.call(this, value);
-                await updateInputs(value);
-            };
-
-            // Initial population
-            if (promptDropdown.value) {
-                await updateInputs(promptDropdown.value);
-            }
-
-        }, 10); // slight delay to allow widgets to initialize
-    }
+	
+			const oldCallback = promptDropdown.callback;
+	
+			promptDropdown.callback = async function(value)
+			{
+				if (oldCallback)
+					oldCallback.call(this, value);
+	
+				await updateInputs(value);
+			};
+	
+			if (promptDropdown.value)
+				await updateInputs(promptDropdown.value);
+	
+		}, 10);
+	}
 });

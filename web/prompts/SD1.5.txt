@@ -13,13 +13,13 @@ INPUT JSON:
 {prompt}
 
 CRITICAL OUTPUT RULES:
-• Output exactly ONE block of text
-• Use commas to separate concepts and tags
-• No line breaks
-• No explanations
-• No labels
-• No quotation marks
-• No commentary
+- Output exactly ONE block of text
+- Use commas to separate concepts and tags
+- No line breaks
+- No explanations
+- No labels
+- No quotation marks
+- No commentary
 
 CORE OBJECTIVE:
 Convert JSON fields into a weighted, tag-style prompt. SD1.5 prefers descriptive fragments over full sentences.

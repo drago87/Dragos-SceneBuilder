@@ -13,14 +13,14 @@ INPUT JSON:
 {prompt}
 
 CRITICAL OUTPUT RULES:
-• START the prompt exactly with the core quality anchors: masterpiece, best quality, very awa, newest,
-• Output exactly ONE paragraph total
-• Use normalized Danbooru tags: No underscores (use spaces), and escape parentheses with backslashes (e.g., \(tag\))
-• No line breaks
-• No explanations
-• No labels
-• No quotation marks
-• No commentary
+- START the prompt exactly with the core quality anchors: masterpiece, best quality, very awa, newest,
+- Output exactly ONE paragraph total
+- Use normalized Danbooru tags: No underscores (use spaces), and escape parentheses with backslashes (e.g., \(tag\))
+- No line breaks
+- No explanations
+- No labels
+- No quotation marks
+- No commentary
 
 CORE OBJECTIVE:
 NoobAI-XL thrives on a specific hierarchy: Quality/Aesthetic tags -> Subject Count (1girl/1boy) -> Subject Traits -> Actions -> Environment. It supports natural language but prefers detailed, comma-separated tags for high accuracy.
@@ -36,7 +36,7 @@ ENHANCEMENT GUIDELINES:
 Enhance with NoobAI-specific boosters: "highres, absurdres, ultra-detailed, cinematic composition." Ensure all tags are separated by a comma and a space.
 
 STYLE TARGET:
-A professional, tag-dense prompt optimized for NoobAI-XL’s aesthetic and semantic understanding.
+A professional, tag-dense prompt optimized for NoobAI-XL's aesthetic and semantic understanding.
 
 Now compile the NoobAI prompt from the INPUT JSON.
 </prompt>

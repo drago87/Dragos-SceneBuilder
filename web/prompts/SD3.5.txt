@@ -13,13 +13,13 @@ INPUT JSON:
 {prompt}
 
 CRITICAL OUTPUT RULES:
-• Output exactly ONE fluid paragraph
-• Use natural, descriptive language—avoid long lists of disjointed tags
-• No line breaks
-• No explanations
-• No labels
-• No quotation marks
-• No commentary
+- Output exactly ONE fluid paragraph
+- Use natural, descriptive language—avoid long lists of disjointed tags
+- No line breaks
+- No explanations
+- No labels
+- No quotation marks
+- No commentary
 
 CORE OBJECTIVE:
 SD3.5 thrives on "Natural Language" prompting. Convert the JSON fields into a clear description of the scene, moving logically from the primary subject to the background and finally the artistic style.

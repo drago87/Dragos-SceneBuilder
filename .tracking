@@ -1,0 +1,26 @@
+.gitattributes
+.github/workflows/publish_action.yml
+.gitignore
+LICENSE
+README.md
+__init__.py
+pyproject.toml
+scene_builder.py
+web/dragos_dynamic.js
+web/dragos_prompt_loader.js
+web/dragos_structured_builder.js
+web/prompts/AuraFlow.txt
+web/prompts/Flux .1.txt
+web/prompts/Illustrious.txt
+web/prompts/NoobAI.txt
+web/prompts/Pony.txt
+web/prompts/Qwen.txt
+web/prompts/SD1.5.txt
+web/prompts/SD3.5.txt
+web/prompts/SDXL.txt
+web/prompts/Z-Image.txt
+web/schema/camera.json
+web/schema/character_female.json
+web/schema/character_male.json
+web/schema/environment.json
+web/schema/style.json

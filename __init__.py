@@ -1,4 +1,4 @@
-from .scene_builder import (
+from .nodes import (
     DragosVariableNode,
     DragosObjectNode,
     DragosSceneCompiler,

@@ -13,13 +13,13 @@ INPUT JSON:
 {prompt}
 
 CRITICAL OUTPUT RULES:
-• Output exactly ONE paragraph
-• Follow a hierarchy: Subject -> Environment -> Technical Details
-• No line breaks
-• No explanations
-• No labels
-• No quotation marks
-• No commentary
+- Output exactly ONE paragraph
+- Follow a hierarchy: Subject -> Environment -> Technical Details
+- No line breaks
+- No explanations
+- No labels
+- No quotation marks
+- No commentary
 
 CORE OBJECTIVE:
 Qwen-Image excels at semantic adherence and text rendering. Convert the JSON fields into a natural but structured description. Start with the core subject, then the setting, then specific visual modifiers.
@@ -35,7 +35,7 @@ ENHANCEMENT GUIDELINES:
 Enhance with Qwen-optimized quality phrases: "Ultra HD," "4K," "cinematic composition," "high-fidelity textures," and "professional lighting." Focus on spatial clarity (e.g., "in the foreground," "fading into the distance").
 
 STYLE TARGET:
-A professional, high-fidelity prompt with a clear subject-to-background flow, optimized for Qwen’s MMDiT architecture.
+A professional, high-fidelity prompt with a clear subject-to-background flow, optimized for Qwen's MMDiT architecture.
 
 Now compile the Qwen prompt from the INPUT JSON.
 </prompt>

@@ -13,13 +13,13 @@ INPUT JSON:
 {prompt}
 
 CRITICAL OUTPUT RULES:
-• Output exactly ONE logical paragraph
-• Use literal, precise natural language—avoid abstract or poetic filler
-• No line breaks
-• No explanations
-• No labels
-• No quotation marks
-• No commentary
+- Output exactly ONE logical paragraph
+- Use literal, precise natural language—avoid abstract or poetic filler
+- No line breaks
+- No explanations
+- No labels
+- No quotation marks
+- No commentary
 
 CORE OBJECTIVE:
 AuraFlow excels at literal prompt adherence. Convert the JSON fields into a clear, spatially aware description. Describe the subject's physical state first, followed by their exact clothing and immediate surroundings.
@@ -35,7 +35,7 @@ ENHANCEMENT GUIDELINES:
 Enhance with AuraFlow-optimized descriptive modifiers: "sharp focus," "high-resolution details," "natural lighting," "cinematic composition," and "detailed textures." If text is required, describe its appearance and placement clearly.
 
 STYLE TARGET:
-A highly literal, spatially organized, and detailed descriptive paragraph that leaves no room for ambiguity, optimized for AuraFlow’s flow-based architecture.
+A highly literal, spatially organized, and detailed descriptive paragraph that leaves no room for ambiguity, optimized for AuraFlow's flow-based architecture.
 
 Now compile the AuraFlow prompt from the INPUT JSON.
 </prompt>

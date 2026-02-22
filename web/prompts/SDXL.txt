@@ -13,14 +13,14 @@ INPUT JSON:
 {prompt}
 
 CRITICAL OUTPUT RULES:
-• Output exactly ONE paragraph
-• Use a mix of natural language and descriptive technical phrases
-• No line breaks
-• No lists
-• No explanations
-• No labels
-• No quotation marks
-• No commentary
+- Output exactly ONE paragraph
+- Use a mix of natural language and descriptive technical phrases
+- No line breaks
+- No lists
+- No explanations
+- No labels
+- No quotation marks
+- No commentary
 
 CORE OBJECTIVE:
 Convert the JSON into a descriptive "cinematic scene" format. SDXL responds best to prompts that describe the subject, then the details, then the environment, followed by camera/lighting technicals.

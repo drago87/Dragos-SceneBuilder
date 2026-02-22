@@ -13,14 +13,14 @@ INPUT JSON:
 {prompt}
 
 CRITICAL OUTPUT RULES:
-• START the prompt exactly with: masterpiece, best quality, amazing quality,
-• Output exactly ONE paragraph total
-• Use a hybrid format: specific Danbooru-style tags mixed with descriptive natural language sentences
-• No line breaks
-• No explanations
-• No labels
-• No quotation marks
-• No commentary
+- START the prompt exactly with: masterpiece, best quality, amazing quality,
+- Output exactly ONE paragraph total
+- Use a hybrid format: specific Danbooru-style tags mixed with descriptive natural language sentences
+- No line breaks
+- No explanations
+- No labels
+- No quotation marks
+- No commentary
 
 CORE OBJECTIVE:
 Illustrious-XL works best when quality tags come first, followed by subject details and then environmental descriptions. It supports both tags and natural language for high-resolution (1536x1536) consistency.

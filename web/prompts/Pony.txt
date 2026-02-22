@@ -13,14 +13,14 @@ INPUT JSON:
 {prompt}
 
 CRITICAL OUTPUT RULES:
-• START the prompt exactly with: score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up,
-• Output exactly ONE paragraph total
-• Use a mix of descriptive tags and natural phrases separated by commas
-• No line breaks
-• No explanations
-• No labels
-• No quotation marks
-• No commentary
+- START the prompt exactly with: score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up,
+- Output exactly ONE paragraph total
+- Use a mix of descriptive tags and natural phrases separated by commas
+- No line breaks
+- No explanations
+- No labels
+- No quotation marks
+- No commentary
 
 CORE OBJECTIVE:
 Pony V6 XL requires specific quality "score" tags at the beginning to function correctly. Convert the JSON fields into a detailed prompt that follows this structure.
