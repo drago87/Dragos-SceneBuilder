@@ -219,23 +219,30 @@ async function rebuild(node) {
     //
     // ADD THIS BLOCK
     //
-    let jsonWidget = node.widgets.find(w => w.name === "json_data");
-
-    if (!jsonWidget)
-    {
-        jsonWidget = node.addWidget(
-            "text",
-            "json_data",
-            "",
-            () => {},
-            { multiline: true }
-        );
-
-        jsonWidget.hidden = true;
-    }
-
-    const data = buildNestedObjectFromWidgets(node);
-    jsonWidget.value = JSON.stringify(data);
+	const data = buildNestedObjectFromWidgets(node);
+	
+	let jsonWidget = node.widgets.find(w => w.name === "json_data");
+	
+	if (!jsonWidget)
+	{
+		jsonWidget = node.addWidget(
+			"text",
+			"json_data",
+			"",
+			() => {}
+		);
+	
+		// Fully hide visually and from layout
+		jsonWidget.hidden = true;
+		jsonWidget.computeSize = () => [0, -8];
+		jsonWidget.draw = () => {};
+	}
+	
+	jsonWidget.value = JSON.stringify(data);
+	
+	// Also store in properties for persistence safety
+	node.properties = node.properties || {};
+	node.properties.json_data = jsonWidget.value;
     //
     // END BLOCK
     //
