@@ -30,4 +30,4 @@ I have a node that lets you select a prompt to use with the LLM to convert it to
 
 You can connect this node to a node that talks to your LLM backend. I Reccomend [Comfyui-Z-Image-Utilities](https://github.com/Koko-boya/Comfyui-Z-Image-Utilities) as the prompts are build for it.
 
-The LLM model i use to convert the json to an Image prompt is [Llama-Joycaption-Beta-One-Hf-Llava-Q4_K](https://huggingface.co/concedo/llama-joycaption-beta-one-hf-llava-mmproj-gguf/blob/main/Llama-Joycaption-Beta-One-Hf-Llava-Q4_K.gguf). Small enugh to fit on the CPU freeing up the GPU for your Image Models. Or if you use smaller Image models and have a GUP with more Vram you can fith both on the GPU for more speed.
+The LLM model i use to convert the json to an Image prompt is [Llama-Joycaption-Beta-One-Hf-Llava-Q4_K](https://huggingface.co/concedo/llama-joycaption-beta-one-hf-llava-mmproj-gguf/blob/main/Llama-Joycaption-Beta-One-Hf-Llava-Q4_K.gguf). Small enugh to fit on the CPU freeing up the GPU for your Image Models. Or if you use smaller Image models and have a GPU with more Vram you can fith both on the GPU for more speed.
