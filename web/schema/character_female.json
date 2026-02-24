@@ -43,9 +43,9 @@
 			"shape":["flat","rounded","prominent"],
 			"hair": {
 				"presence":["yes","no"],
-				"density":["sparse","moderate","dense"],
-				"distribution":["none","central","full","wide"],
-				"color":["blonde","brown","black","red","gray","other"]
+				"density":["","sparse","moderate","dense"],
+				"distribution":["","none","central","full","wide"],
+				"color":["","blonde","brown","black","red","gray","other"]
 			}
 		},
 		"labia_majora": {
@@ -67,11 +67,11 @@
 		},
 		"clitoris": {
 			"visibility":["hidden","partially visible","visible"],
-			"size":["small","medium","large"],
+			"size":["","small","medium","large"],
 			"hood": {
-				"coverage":["fully covered","partially covered","exposed"],
-				"size":["small","medium","large"],
-				"shape":["rounded","pointed","elongated"]
+				"coverage":["","fully covered","partially covered","exposed"],
+				"size":["","small","medium","large"],
+				"shape":["","rounded","pointed","elongated"]
 			}
 		},
 		"breasts": {

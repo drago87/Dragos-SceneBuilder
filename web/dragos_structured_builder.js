@@ -190,82 +190,99 @@ async function rebuild(node) {
     const categoryWidget = node.widgets.find(w => w.name === "category");
     if (!categoryWidget) return;
 
+    // Load schema for selected category
     const schema = await loadSchema(categoryWidget.value);
     if (!schema) return;
 
-    const savedValues = {};
-    for (const w of node.widgets)
-        if (w.dragosPath)
-            savedValues[w.dragosPath] = w.value;
+    // Parse saved data from previous json_data
+    let savedData = {};
+    if (node.properties?.json_data) {
+        try {
+            const parsed = JSON.parse(node.properties.json_data);
+            savedData = parsed.data || {};
+        } catch {}
+    }
 
-    clearGeneratedWidgets(node);
+    // Clear old dynamic widgets (keep category)
+    node.widgets = node.widgets.filter(w => w.name === "category");
+
+    // Rebuild widgets from schema
     buildWidgetsFromSchema(node, schema);
 
+    // Restore values from savedData
     for (const w of node.widgets) {
         if (!w.dragosPath) continue;
 
-        if (w.name === "Gender" && schema._meta?.gender) {
-            w.value = schema._meta.gender;
-            continue;
-        }
+        const keys = w.dragosPath.split(".");
+        let current = savedData;
 
-        if (savedValues[w.dragosPath] !== undefined)
-            w.value = savedValues[w.dragosPath];
+        for (let i = 0; i < keys.length; i++) {
+            const k = keys[i];
+            if (i === keys.length - 1 && current && k in current) {
+                w.value = current[k];
+            } else if (current && k in current) {
+                current = current[k];
+            } else {
+                current = null;
+            }
+        }
     }
 
+    // Evaluate conditional visibility & layout
     evaluateConditions(node);
     applyWidgetVisibility(node);
 
-    //
-    // ADD THIS BLOCK
-    //
-	const data = buildNestedObjectFromWidgets(node);
-	
-	const schemaMeta = schema._meta || {};
-	
-	const displayName =
-		schemaMeta.display_name ||
-		schemaMeta.displayName ||
-		categoryWidget.value ||
-		"";
-	
-	const final = {
-		_meta: {
-			category: String(displayName).toLowerCase(),
-			extension: String(schemaMeta.extension || "").toLowerCase(),
-			schema: String(categoryWidget.value || "").toLowerCase()
-		},
-		data: data
-	};
-	
-	let jsonWidget = node.widgets.find(w => w.name === "json_data");
-	
-	if (!jsonWidget)
-	{
-		jsonWidget = node.addWidget(
-			"text",
-			"json_data",
-			"",
-			() => {}
-		);
-	
-		jsonWidget.hidden = true;
-		jsonWidget.computeSize = () => [0, -8];
-		jsonWidget.draw = () => {};
-	}
-	
-	jsonWidget.value = JSON.stringify(final);
-	
-	node.properties = node.properties || {};
-	node.properties.json_data = jsonWidget.value;
-	
-	// Also store in properties for persistence safety
-	node.properties = node.properties || {};
-	node.properties.json_data = jsonWidget.value;
-    //
-    // END BLOCK
-    //
+    // Build final JSON to store in hidden widget & properties
+    const data = buildNestedObjectFromWidgets(node);
+    const schemaMeta = schema._meta || {};
+    const displayName = schemaMeta.display_name || schemaMeta.displayName || categoryWidget.value || "";
 
+    const final = {
+        _meta: {
+            category: String(displayName).toLowerCase(),
+            extension: String(schemaMeta.extension || "").toLowerCase(),
+            schema: String(categoryWidget.value || "").toLowerCase()
+        },
+        data: data
+    };
+
+    // Store in hidden json_data widget
+    let jsonWidget = node.widgets.find(w => w.name === "json_data");
+    if (!jsonWidget) {
+        jsonWidget = node.addWidget("text", "json_data", "", () => {});
+        jsonWidget.hidden = true;
+        jsonWidget.computeSize = () => [0, -8];
+        jsonWidget.draw = () => {};
+    }
+    jsonWidget.value = JSON.stringify(final);
+
+    // Also persist in node properties for graph save/load
+    node.properties = node.properties || {};
+    node.properties.json_data = jsonWidget.value;
+
+    // Hook dynamic widgets to update json_data on change
+    for (const w of node.widgets) {
+        if (!w.dragosPath) continue;
+
+        const origCallback = w.callback;
+        w.callback = function() {
+            if (origCallback) origCallback.call(this);
+
+            const updatedData = buildNestedObjectFromWidgets(node);
+            const updatedFinal = {
+                _meta: final._meta,
+                data: updatedData
+            };
+            jsonWidget.value = JSON.stringify(updatedFinal);
+            node.properties.json_data = jsonWidget.value;
+
+            evaluateConditions(node);
+            applyWidgetVisibility(node);
+            app.graph.setDirtyCanvas(true, true);
+        };
+    }
+
+    // Resize node if needed
     if (node.computeSize)
         node.setSize(node.computeSize());
 

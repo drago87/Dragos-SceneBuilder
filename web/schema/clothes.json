@@ -3,6 +3,7 @@
 		"extension": "character"
 	},
 	"clothing": {
+		"nude": ["No", "Yes"],
 		"top": "string",
 		"bottom": "string",
 		"footwear": "string",

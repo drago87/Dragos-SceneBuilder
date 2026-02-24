@@ -46,7 +46,7 @@ app.registerExtension({
 	nodeCreated(node)
 	{
 		// Only affect DragosPromptLoaderNode
-		if (node.comfyClass !== "DragosPromptLoaderNode")
+		if (node.comfyClass !== "DragosPromptLoader")
 			return;
 	
 		setTimeout(async () =>
