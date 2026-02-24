@@ -221,6 +221,23 @@ async function rebuild(node) {
     //
 	const data = buildNestedObjectFromWidgets(node);
 	
+	const schemaMeta = schema._meta || {};
+	
+	const displayName =
+		schemaMeta.display_name ||
+		schemaMeta.displayName ||
+		categoryWidget.value ||
+		"";
+	
+	const final = {
+		_meta: {
+			category: String(displayName).toLowerCase(),
+			extension: String(schemaMeta.extension || "").toLowerCase(),
+			schema: String(categoryWidget.value || "").toLowerCase()
+		},
+		data: data
+	};
+	
 	let jsonWidget = node.widgets.find(w => w.name === "json_data");
 	
 	if (!jsonWidget)
@@ -232,13 +249,15 @@ async function rebuild(node) {
 			() => {}
 		);
 	
-		// Fully hide visually and from layout
 		jsonWidget.hidden = true;
 		jsonWidget.computeSize = () => [0, -8];
 		jsonWidget.draw = () => {};
 	}
 	
-	jsonWidget.value = JSON.stringify(data);
+	jsonWidget.value = JSON.stringify(final);
+	
+	node.properties = node.properties || {};
+	node.properties.json_data = jsonWidget.value;
 	
 	// Also store in properties for persistence safety
 	node.properties = node.properties || {};

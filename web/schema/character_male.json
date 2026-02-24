@@ -1,6 +1,6 @@
 {
 	"_meta": {
-		"display_name": "Character - Male",
+		"display_name": "Character",
 		"gender": "Male"
 	},
 	"name":"string",
@@ -48,11 +48,5 @@
 		},
 		
 		"musculature":["slim","average","athletic","muscular"]
-	},
-	"actions":{
-		"primary":"string",
-		"secondary":"string",
-		"tertiary":"string",
-		"quaternary":"string"
 	}
 }

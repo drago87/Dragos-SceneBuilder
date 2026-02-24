@@ -1,0 +1,11 @@
+{
+	"_meta": {
+		"extension": "character"
+	},
+	"actions": {
+		"primary": "string",
+		"secondary": "string",
+		"tertiary": "string",
+		"quaternary": "string"
+	}
+}

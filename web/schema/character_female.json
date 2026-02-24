@@ -1,6 +1,6 @@
 {
 	"_meta": {
-		"display_name": "Character - Female",
+		"display_name": "Character",
 		"gender": "Female"
 	},
 	"name":"string",
@@ -79,11 +79,5 @@
 			"shape":["round","teardrop","wide","narrow"],
 			"symmetry":["symmetric","slightly asymmetric","asymmetric"]
 		}
-	},
-	"actions":{
-		"primary":"string",
-		"secondary":"string",
-		"tertiary":"string",
-		"quaternary":"string"
 	}
 }

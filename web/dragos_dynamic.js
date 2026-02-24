@@ -95,87 +95,375 @@ function getValueRecursive(node, graph)
 
 function refreshNode(node, graph, previewWidget, syncPreviewHeight)
 {
-	if (!node.inputs) return;
+    if (!node || !graph || !node.inputs)
+        return;
 
-	if (previewWidget)
+
+    ////////////////////////////////////////////////////////////
+    // STEP 1 — Collect ordered origin nodes (stable order)
+    ////////////////////////////////////////////////////////////
+
+    const orderedOrigins = [];
+
+    for (let i = 0; i < node.inputs.length; i++)
+    {
+        const input = node.inputs[i];
+
+        if (!input || input.link == null)
+            continue;
+
+        const link = graph.links[input.link];
+        if (!link)
+            continue;
+
+        const origin = graph.getNodeById(link.origin_id);
+
+        if (!origin)
+            continue;
+
+        if (!isNodeActive(origin))
+            continue;
+
+        orderedOrigins.push(origin);
+    }
+
+
+
+    ////////////////////////////////////////////////////////////
+    // STEP 2 — Build intermediate structure
+    ////////////////////////////////////////////////////////////
+
+    const built = [];
+
+    for (let i = 0; i < orderedOrigins.length; i++)
+    {
+        const origin = orderedOrigins[i];
+
+        const value =
+            getValueRecursive(origin, graph);
+
+        if (
+            value == null ||
+            (typeof value === "object" &&
+             Object.keys(value).length === 0)
+        )
+            continue;
+
+
+        let category = "";
+        let extension = "";
+
+
+        // Read _meta from json_data widget ONCE
+        const jsonWidget =
+            origin.widgets?.find(
+                w => w.name === "json_data"
+            );
+
+        if (jsonWidget?.value)
+        {
+            try
+            {
+                const parsed =
+                    JSON.parse(jsonWidget.value);
+
+                const meta = parsed?._meta;
+
+                if (meta)
+                {
+                    category =
+                        String(
+                            meta.display_name ??
+                            meta.displayName ??
+                            meta.category ??
+                            ""
+                        ).toLowerCase();
+
+                    extension =
+                        String(
+                            meta.extension ?? ""
+                        ).toLowerCase();
+                }
+            }
+            catch {}
+        }
+
+
+        // Fallback category detection
+        if (!category)
+        {
+            category =
+                String(
+                    getWidgetValue(
+                        origin,
+                        ["category", "obj_name", "var_name"]
+                    ) || ""
+                ).toLowerCase();
+        }
+
+
+        built.push({
+            category,
+            extension,
+            value,
+            sceneKey: null
+        });
+    }
+
+
+
+    ////////////////////////////////////////////////////////////
+    // STEP 3 — Merge into final scene
+    ////////////////////////////////////////////////////////////
+
+    const scene = {};
+
+    let characterCount = 0;
+
+
+    for (let i = 0; i < built.length; i++)
+    {
+        const entry = built[i];
+
+        ////////////////////////////////////////////////////////
+        // TOP-LEVEL
+        ////////////////////////////////////////////////////////
+
+        if (!entry.extension)
+        {
+            if (entry.category === "character")
+            {
+                characterCount++;
+
+                const key =
+                    `character_${characterCount}`;
+
+                scene[key] = entry.value;
+
+                entry.sceneKey = key;
+            }
+            else if (entry.category)
+            {
+                const key = entry.category;
+
+                scene[key] = entry.value;
+
+                entry.sceneKey = key;
+            }
+
+            continue;
+        }
+
+
+        ////////////////////////////////////////////////////////
+        // EXTENSION MERGE
+        ////////////////////////////////////////////////////////
+
+        const targetCategory =
+            entry.extension;
+
+        for (let j = i - 1; j >= 0; j--)
+        {
+            const candidate = built[j];
+
+            if (
+                candidate.category !== targetCategory
+            )
+                continue;
+
+            const targetKey =
+                candidate.sceneKey;
+
+            if (!targetKey)
+                break;
+
+            if (!scene[targetKey])
+                scene[targetKey] = {};
+
+            Object.assign(
+                scene[targetKey],
+                entry.value
+            );
+
+            break;
+        }
+    }
+
+
+
+    ////////////////////////////////////////////////////////////
+    // STEP 4 — Remove empty objects (deep clean)
+    ////////////////////////////////////////////////////////////
+
+    function removeEmpty(obj)
+    {
+        if (!obj || typeof obj !== "object")
+            return obj;
+
+        for (const key in obj)
+        {
+            const val =
+                removeEmpty(obj[key]);
+
+            if (
+                val == null ||
+                (typeof val === "object" &&
+                 Object.keys(val).length === 0)
+            )
+            {
+                delete obj[key];
+            }
+        }
+
+        return obj;
+    }
+
+    removeEmpty(scene);
+
+
+
+    ////////////////////////////////////////////////////////////
+    // STEP 5 — Convert to JSON
+    ////////////////////////////////////////////////////////////
+
+    const json =
+        JSON.stringify(scene, null, "\t");
+
+
+
+    ////////////////////////////////////////////////////////////
+    // STEP 6 — Update preview widget (only if changed)
+    ////////////////////////////////////////////////////////////
+
+    if (
+        previewWidget &&
+        previewWidget.value !== json
+    )
+    {
+        previewWidget.value = json;
+
+        if (syncPreviewHeight)
+            syncPreviewHeight();
+    }
+
+
+
+    ////////////////////////////////////////////////////////////
+    // STEP 7 — Hidden output widget
+    ////////////////////////////////////////////////////////////
+
+    let hiddenOutput =
+        node.widgets.find(
+            w => w.name === "output_json_string"
+        );
+
+    if (!hiddenOutput)
+    {
+        hiddenOutput =
+            node.addWidget(
+                "text",
+                "output_json_string",
+                "",
+                () => {}
+            );
+
+        hiddenOutput.hidden = true;
+        hiddenOutput.computeSize =
+            () => [0, -8];
+        hiddenOutput.draw =
+            () => {};
+    }
+
+    hiddenOutput.value = json;
+
+
+
+	////////////////////////////////////////////////////////////
+	// STEP 8 — Dynamic inputs (CORRECT INDEX-SAFE VERSION)
+	////////////////////////////////////////////////////////////
+	
+	const dynamicInputs = node.inputs
+		.map((slot, realIndex) => ({
+			slot,
+			realIndex,
+			index: (
+				slot &&
+				slot.name &&
+				slot.name.startsWith("input_")
+			)
+				? parseInt(slot.name.substring(6)) || 0
+				: -1
+		}))
+		.filter(x => x.index >= 0)
+		.sort((a, b) => a.index - b.index);
+	
+	
+	if (dynamicInputs.length === 0)
+		return;
+	
+	
+	let changed = false;
+	
+	
+	////////////////////////////////////////////////////////////
+	// Add new slot if last is connected
+	////////////////////////////////////////////////////////////
+	
+	const last = dynamicInputs[dynamicInputs.length - 1];
+	
+	if (last.slot.link != null)
 	{
-		const scene = {};
-		let characterCount = 1;
-
-		for (const input of node.inputs)
-		{
-			if (input.link == null) continue;
-
-			const link = graph.links[input.link];
-			if (!link) continue;
-
-			const origin = graph.getNodeById(link.origin_id);
-			if (!origin) continue;
-			if (!isNodeActive(origin)) continue;
-
-			let key = null;
-
-			if (origin.comfyClass === "DragosStructuredBuilder")
-			{
-				const categoryWidget =
-					origin.widgets?.find(w => w.name === "category");
-
-				const category = categoryWidget?.value;
-
-				if (category === "camera")
-					key = "camera";
-				else if (category && category.startsWith("character"))
-					key = `character_${characterCount++}`;
-				else
-					key = category ?? input.name;
-			}
-			else
-			{
-				key =
-					getWidgetValue(origin, ["var_name", "obj_name"])
-					?? input.name;
-			}
-
-			const value = getValueRecursive(origin, graph);
-
-			if (value !== undefined)
-				scene[key] = value;
-		}
-
-		const json = JSON.stringify(scene, null, "\t");
-
-		if (previewWidget.value !== json)
-		{
-			previewWidget.value = json;
-
-			if (syncPreviewHeight)
-				syncPreviewHeight();
-		}
+		node.addInput(
+			`input_${last.index + 1}`,
+			"PROMPT_VAR"
+		);
+	
+		changed = true;
 	}
-
-	// dynamic input slots
-
-	const inputs = node.inputs;
-	if (!inputs.length) return;
-
-	const last = inputs[inputs.length - 1];
-
-	if (last.link != null)
+	
+	
+	////////////////////////////////////////////////////////////
+	// Remove trailing empty slots SAFELY using REAL INDEX
+	////////////////////////////////////////////////////////////
+	
+	while (dynamicInputs.length > 1)
 	{
-		node.addInput(`input_${inputs.length + 1}`, "PROMPT_VAR");
+		const lastEntry =
+			dynamicInputs[dynamicInputs.length - 1];
+	
+		const prevEntry =
+			dynamicInputs[dynamicInputs.length - 2];
+	
+		if (
+			lastEntry.slot.link == null &&
+			prevEntry.slot.link == null
+		)
+		{
+			// find CURRENT real index (important)
+			const currentRealIndex =
+				node.inputs.findIndex(
+					s => s === lastEntry.slot
+				);
+	
+			if (currentRealIndex !== -1)
+			{
+				node.removeInput(currentRealIndex);
+	
+				dynamicInputs.pop();
+	
+				changed = true;
+	
+				continue;
+			}
+		}
+	
+		break;
+	}
+	
+	
+	if (changed)
+	{
 		node.setDirtyCanvas(true, true);
-	}
-
-	if (inputs.length > 1)
-	{
-		const last = inputs[inputs.length - 1];
-		const prev = inputs[inputs.length - 2];
-
-		if (last.link == null && prev.link == null)
-		{
-			node.removeInput(inputs.length - 1);
-			node.setDirtyCanvas(true, true);
-		}
 	}
 }
 

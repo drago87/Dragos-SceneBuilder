@@ -1,0 +1,15 @@
+{
+	"_meta": {
+		"extension": "character"
+	},
+	"clothing": {
+		"top": "string",
+		"bottom": "string",
+		"footwear": "string",
+		"accessories": "string",
+		"underwear": {
+			"bra": "string",
+			"panties": "string"
+		}
+	}
+}

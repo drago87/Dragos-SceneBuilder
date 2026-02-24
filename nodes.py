@@ -201,6 +201,9 @@ class DragosSceneCompiler:
             "required": {},
             "optional": {
                 "input_1": (PROMPT_VAR_TYPE, {"forceInput": True}),
+            },
+            "hidden": {
+                "output_json_string": ("STRING", {"multiline": True}),
             }
         }
 
@@ -214,31 +217,24 @@ class DragosSceneCompiler:
         """Recursively unwrap tuples from ComfyUI PROMPT_VAR_TYPE nodes."""
         depth = 0
         while isinstance(v, tuple) and len(v) == 1:
-            #print(f"[unwrap] depth {depth}: tuple -> {v}")
             v = v[0]
             depth += 1
-        #print(f"[unwrap] final value: {v}")
         return v
 
     def compile_json(self, **kwargs):
+        # If hidden output exists, use it directly
+        hidden_json = kwargs.get("output_json_string")
+        if hidden_json:
+            return (hidden_json,)
+
+        # Otherwise, build from inputs as before
         scene = {}
-
-        #print("=== DragosSceneCompiler: compile_json ===")
         for key, v in kwargs.items():
-            #print(f"Input '{key}' raw value: {v}")
             unwrapped = self._unwrap_prompt_var(v)
-            #print(f"Input '{key}' unwrapped: {unwrapped}")
-
             if isinstance(unwrapped, dict) and "name" in unwrapped and "value" in unwrapped:
                 scene[unwrapped["name"]] = unwrapped["value"]
-                #print(f"Added to scene: {unwrapped['name']} -> {unwrapped['value']}")
-            else:
-                #print(f"Skipped input '{key}': not a valid prompt var")
-                pass
 
         json_out = json.dumps(scene, indent="\t", ensure_ascii=False)
-        #print("=== compile_json result ===")
-        #print(json_out)
         return (json_out,)
 
 class DragosStructuredBuilderNode:
@@ -259,13 +255,17 @@ class DragosStructuredBuilderNode:
         }
 
     def build(self, category, json_data):
-
+    
         try:
             parsed = json.loads(json_data) if json_data else {}
         except Exception:
             parsed = {}
-
+    
+        meta = parsed.get("_meta", {})
+        data = parsed.get("data", {})
+    
         return ({
-            "name": category,
-            "value": parsed
+            "name": meta.get("category", category),
+            "value": data,
+            "_meta": meta
         },)
