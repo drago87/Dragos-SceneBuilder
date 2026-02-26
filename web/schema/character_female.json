@@ -18,6 +18,7 @@
 			"bottom-right"
 		],
 		"proximity_to_camera": [
+			"",
 			"foreground",
 			"midground",
 			"background",
@@ -26,6 +27,7 @@
 			"far"
 		],
 		"orientation": [
+			"",
 			"facing camera",
 			"facing left",
 			"facing right",
@@ -36,37 +38,174 @@
 			"three-quarter right"
 		],
 		"relative_to":  ""
-    },
+	},
+	"appearance": {
+		"body_form": [
+			"",
+			"slim",
+			"athletic",
+			"toned",
+			"curvy",
+			"hourglass",
+			"pear-shaped",
+			"petite",
+			"tall",
+			"plump",
+			"voluptuous",
+			"other"
+		],
+		"face_form": [
+			"",
+			"oval",
+			"round",
+			"heart-shaped",
+			"square",
+			"diamond",
+			"long",
+			"angular",
+			"soft",
+			"other"
+		],
+		"skin": {
+			"tone": [
+				"",
+				"pale",
+				"fair",
+				"tan",
+				"olive",
+				"brown",
+				"dark",
+				"ebony",
+				"other"
+			],
+			"details": [
+				"",
+				"freckles",
+				"moles",
+				"birthmarks",
+				"scars",
+				"tattoos",
+				"piercings",
+				"clear",
+				"other"
+			]
+		},
+		"eyes": {
+			"left": {
+				"color": [
+					"",
+					"blue",
+					"brown",
+					"green",
+					"hazel",
+					"gray",
+					"amber",
+					"other"
+				],
+				"shape": [
+					"",
+					"almond",
+					"round",
+					"hooded",
+					"upturned",
+					"downturned",
+					"wide-set",
+					"other"
+				]
+			},
+			"right": {
+				"color": [
+					"",
+					"blue",
+					"brown",
+					"green",
+					"hazel",
+					"gray",
+					"amber",
+					"other"
+				],
+				"shape": [
+					"",
+					"almond",
+					"round",
+					"hooded",
+					"upturned",
+					"downturned",
+					"wide-set",
+					"other"
+				]
+			}
+		},
+		"head_hair": {
+			"presence": ["Yes", "No"],
+			"style": [
+				"",
+				"straight",
+				"wavy",
+				"curly",
+				"coily",
+				"pixie cut",
+				"bob",
+				"shoulder-length",
+				"long",
+				"ponytail",
+				"braids",
+				"bun",
+				"other"
+			],
+			"color": [
+				"",
+				"blonde",
+				"brunette",
+				"black",
+				"red",
+				"platinum",
+				"auburn",
+				"gray",
+				"dyed-unnatural",
+				"other"
+			],
+			"length": [
+				"",
+				"shaved",
+				"short",
+				"medium",
+				"long",
+				"very long",
+				"other"
+			]
+		}
+	},
 	"anatomy": {
 		"mons_pubis": {
-			"size":["small","medium","large"],
-			"shape":["flat","rounded","prominent"],
+			"size":["","small","medium","large"],
+			"shape":["","flat","rounded","prominent"],
 			"hair": {
-				"presence":["yes","no"],
+				"presence":["","yes","no"],
 				"density":["","sparse","moderate","dense"],
 				"distribution":["","none","central","full","wide"],
 				"color":["","blonde","brown","black","red","gray","other"]
 			}
 		},
 		"labia_majora": {
-			"size":["small","medium","large"],
-			"thickness":["thin","average","thick"],
-			"symmetry":["symmetric","slightly asymmetric","asymmetric"],
-			"shape":["slit","rounded","full"],
-			"fullness":["flat","moderate","full"],
-			"texture":["smooth","soft","wrinkled"]
+			"size":["","small","medium","large"],
+			"thickness":["","thin","average","thick"],
+			"symmetry":["","symmetric","slightly asymmetric","asymmetric"],
+			"shape":["","slit","rounded","full"],
+			"fullness":["","flat","moderate","full"],
+			"texture":["","smooth","soft","wrinkled"]
 		},
 		"labia_minora": {
-			"size":["small","medium","large"],
-			"length":["short","average","long"],
-			"protrusion":["none","slight","moderate","prominent"],
-			"symmetry":["symmetric","slightly asymmetric","asymmetric"],
-			"shape":["slit","rounded","elongated"],
-			"visibility":["hidden","partially visible","visible"],
-			"texture":["smooth","soft","wrinkled"]
+			"visibility":["","hidden","partially visible","visible"],
+			"size":["","small","medium","large"],
+			"length":["","short","average","long"],
+			"protrusion":["","none","slight","moderate","prominent"],
+			"symmetry":["","symmetric","slightly asymmetric","asymmetric"],
+			"shape":["","slit","rounded","elongated"],
+			"texture":["","smooth","soft","wrinkled"]
 		},
 		"clitoris": {
-			"visibility":["hidden","partially visible","visible"],
+			"visibility":["","hidden","partially visible","visible"],
 			"size":["","small","medium","large"],
 			"hood": {
 				"coverage":["","fully covered","partially covered","exposed"],

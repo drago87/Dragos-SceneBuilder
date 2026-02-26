@@ -200,7 +200,7 @@ class DragosSceneCompiler:
         return {
             "required": {},
             "optional": {
-                "input_1": (PROMPT_VAR_TYPE, {"forceInput": True}),
+                "input_1": ("PROMPT_VAR", {"forceInput": True}),
             },
             "hidden": {
                 "output_json_string": ("STRING", {"multiline": True}),
@@ -214,28 +214,47 @@ class DragosSceneCompiler:
 
     @staticmethod
     def _unwrap_prompt_var(v):
-        """Recursively unwrap tuples from ComfyUI PROMPT_VAR_TYPE nodes."""
-        depth = 0
         while isinstance(v, tuple) and len(v) == 1:
             v = v[0]
-            depth += 1
         return v
 
-    def compile_json(self, **kwargs):
-        # If hidden output exists, use it directly
-        hidden_json = kwargs.get("output_json_string")
-        if hidden_json:
-            return (hidden_json,)
+    @staticmethod
+    def _compact_for_llm(text: str) -> str:
+        """
+        Replace tabs and newlines with spaces and collapse multiple spaces.
+        This reduces token count and improves semantic locality.
+        """
+        if not text:
+            return ""
 
-        # Otherwise, build from inputs as before
+        # Replace newline and tab with space
+        text = re.sub(r"[\n\t]+", " ", text)
+
+        # Collapse multiple spaces into one
+        text = re.sub(r" {2,}", " ", text)
+
+        return text.strip()
+
+    def compile_json(self, **kwargs):
+
+        hidden_json = kwargs.get("output_json_string")
+
+        if hidden_json:
+            compact = self._compact_for_llm(hidden_json)
+            return (compact,)
+
         scene = {}
+
         for key, v in kwargs.items():
             unwrapped = self._unwrap_prompt_var(v)
             if isinstance(unwrapped, dict) and "name" in unwrapped and "value" in unwrapped:
                 scene[unwrapped["name"]] = unwrapped["value"]
 
         json_out = json.dumps(scene, indent="\t", ensure_ascii=False)
-        return (json_out,)
+
+        compact = self._compact_for_llm(json_out)
+
+        return (compact,)
 
 class DragosStructuredBuilderNode:
 

@@ -1,7 +1,7 @@
 [project]
 name = "Dragos-SceneBuilder"
 description = "This node pack offers various ways to build json strings that is ment to be used with a LLM to generate Prompts. It also have a node that can load different prompts so that a LLM can use the json string to make the Image Prompt."
-version = "1.1.1"
+version = "1.1.2"
 license = { file = "LICENSE" }
 
 [project.urls]

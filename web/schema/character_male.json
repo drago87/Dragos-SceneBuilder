@@ -18,6 +18,7 @@
 			"bottom-right"
 		],
 		"proximity_to_camera": [
+			"",
 			"foreground",
 			"midground",
 			"background",
@@ -26,6 +27,7 @@
 			"far"
 		],
 		"orientation": [
+			"",
 			"facing camera",
 			"facing left",
 			"facing right",
@@ -36,17 +38,117 @@
 			"three-quarter right"
 		],
 		"relative_to":  ""
-    },
+	},
+	"appearance": {
+		"body_build": [
+			"",
+			"slim",
+			"average",
+			"athletic",
+			"muscular",
+			"bodybuilder",
+			"stocky",
+			"lean",
+			"lanky",
+			"other"
+		],
+		"face_form": [
+			"",
+			"square",
+			"oval",
+			"chiseled",
+			"round",
+			"heart-shaped",
+			"rectangular",
+			"angular",
+			"other"
+		],
+		"skin": {
+			"tone": [
+				"",
+				"pale",
+				"fair",
+				"tan",
+				"olive",
+				"brown",
+				"dark",
+				"ebony",
+				"other"
+			],
+			"details": [
+				"",
+				"freckles",
+				"stubble",
+				"scars",
+				"tattoos",
+				"piercings",
+				"chest hair",
+				"back hair",
+				"other"
+			]
+		},
+		"head_hair": {
+			"presence": ["","Yes", "No"],
+			"style": [
+				"",
+				"short-cropped",
+				"buzz cut",
+				"faded",
+				"slicked-back",
+				"undercut",
+				"messy",
+				"long",
+				"man-bun",
+				"bald",
+				"other"
+			],
+			"color": [
+				"",
+				"blonde",
+				"brown",
+				"black",
+				"red",
+				"gray",
+				"salt and pepper",
+				"other"
+			]
+		},
+		"facial_hair": {
+			"presence": ["","Yes", "No"],
+			"style": [
+				"",
+				"clean-shaven",
+				"stubble",
+				"goatee",
+				"full beard",
+				"mustache",
+				"mutton chops",
+				"van dyke",
+				"other"
+			]
+		}
+	},
 	"anatomy": {
-		"gentile": {
+		"genitals": {
 			"size": [
 				"small",
 				"average",
 				"large"
 			],
-			"body_hair":["none","sparse","moderate","dense"]
+			"circumcised": [
+				"",
+				"yes",
+				"no"
+			],
+			"pubic_hair": {
+				"presence": ["","yes", "no"],
+				"density": ["", "sparse", "moderate", "dense"],
+				"style": ["", "natural", "trimmed", "shaved", "other"]
+			}
 		},
-		
-		"musculature":["slim","average","athletic","muscular"]
+		"physique_details": {
+			"definition": ["", "soft", "toned", "ripped", "bulky"],
+			"shoulder_width": ["", "narrow", "average", "broad"]
+		}
 	}
 }
