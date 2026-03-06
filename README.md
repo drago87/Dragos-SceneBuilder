@@ -28,6 +28,15 @@ To do that the easiest way is to use a LLM with a prompt to convert the json str
 I have a node that lets you select a prompt to use with the LLM to convert it to the right format.
 <img width="477" height="392" alt="Promp Loader" src="https://github.com/user-attachments/assets/d7103b96-b29e-4d68-ae76-717e65cec329" />
 
-You can connect this node to a node that talks to your LLM backend. I Reccomend [Comfyui-Z-Image-Utilities](https://github.com/Koko-boya/Comfyui-Z-Image-Utilities) as the prompts are build for it.
+You can connect this node to a node that talks to your LLM backend. I Recommend [Comfyui-Z-Image-Utilities](https://github.com/Koko-boya/Comfyui-Z-Image-Utilities) as the prompts are build for it.
 
 The LLM model i use to convert the json to an Image prompt is [Llama-Joycaption-Beta-One-Hf-Llava-Q4_K](https://huggingface.co/concedo/llama-joycaption-beta-one-hf-llava-mmproj-gguf/blob/main/Llama-Joycaption-Beta-One-Hf-Llava-Q4_K.gguf). Small enugh to fit on the CPU freeing up the GPU for your Image Models. Or if you use smaller Image models and have a GPU with more Vram you can fith both on the GPU for more speed.
+
+Here is an example on how to connect my nodes to the Comfyui-Z-Image-Utilities nodes
+<img width="1264" height="868" alt="mVf1HITU0P" src="https://github.com/user-attachments/assets/dd587db0-328e-47ce-bf36-da34930067cb" />
+
+1. It is important to connect the Compilers output to the first text box on the node
+2. It is important to set the `prompt_templates` to `custom`
+3. It is important to connect to Prompt loader to the bottom text box (or to copy the prompt from the node into it)
+
+The prompts are designed to allow NSFW, and not to prevent NSFW, so it is recommended to use a local model that allows it. Using a public model sutch as ChatGPT may result in you being banned or at least using up your tokens.
