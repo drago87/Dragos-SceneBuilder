@@ -8,7 +8,8 @@
 		"digital art",
 		"painting",
 		"illustration",
-		"render"
+		"render",
+		"clay"
 	],
 
 	"quality": [
@@ -27,8 +28,45 @@
 	],
 
 	"realism": [
+		"",
 		"stylized",
 		"semi-realistic",
 		"photorealistic"
-	]
+	],
+
+	"art_direction": {
+		"family": [
+			"",
+			"western animation",
+			"anime",
+			"comic book",
+			"storybook",
+			"fantasy art",
+			"sci-fi concept art",
+			"cinematic",
+			"3d animated film"
+		],
+
+		"influence": [
+			"",
+			"disney-like",
+			"pixar-like",
+			"ghibli-like",
+			"dreamworks-like",
+			"anime key visual",
+			"marvel-comic-like",
+			"european fairytale illustration"
+		],
+
+		"tone": [
+			"",
+			"playful",
+			"whimsical",
+			"epic",
+			"dark",
+			"cozy",
+			"magical",
+			"dramatic"
+		]
+	}
 }

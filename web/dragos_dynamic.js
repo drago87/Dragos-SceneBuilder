@@ -4,92 +4,154 @@ import { ComfyWidgets } from "../../scripts/widgets.js";
 
 function isNodeActive(node)
 {
-	if (!node) return false;
+        if (!node) return false;
 
-	if (node.mode === 2) return false;
-	if (node.mode === 4) return false;
+        if (node.mode === 2) return false;
+        if (node.mode === 4) return false;
 
-	return true;
+        return true;
 }
 
 function getWidgetValue(node, names)
 {
-	if (!node.widgets) return null;
+        if (!node.widgets) return null;
 
-	for (const name of names)
-	{
-		const w = node.widgets.find(w => w.name === name);
-		if (w) return w.value;
-	}
+        for (const name of names)
+        {
+                const w = node.widgets.find(w => w.name === name);
+                if (w) return w.value;
+        }
 
-	return null;
+        return null;
+}
+
+function deepMergeObjects(base, override)
+{
+        const result = { ...base };
+
+        for (const key in override)
+        {
+                if (
+                        key in result &&
+                        typeof result[key] === "object" &&
+                        result[key] !== null &&
+                        !Array.isArray(result[key]) &&
+                        typeof override[key] === "object" &&
+                        override[key] !== null &&
+                        !Array.isArray(override[key])
+                )
+                {
+                        result[key] = deepMergeObjects(result[key], override[key]);
+                }
+                else
+                {
+                        result[key] = override[key];
+                }
+        }
+
+        return result;
 }
 
 function getValueRecursive(node, graph)
 {
-	if (!node) return undefined;
-	if (!isNodeActive(node)) return undefined;
+        if (!node) return undefined;
+        if (!isNodeActive(node)) return undefined;
 
-	if (node.comfyClass === "DragosVariable")
-		return getWidgetValue(node, ["text"]) ?? "";
+        if (node.comfyClass === "DragosVariable")
+                return getWidgetValue(node, ["text"]) ?? "";
 
-	if (node.comfyClass === "DragosStructuredBuilder")
-	{
-		const result = {};
+        if (node.comfyClass === "DragosStructuredBuilder")
+        {
+                // First, build the base result from widgets (schema data)
+                const result = {};
 
-		for (const widget of node.widgets || [])
-		{
-			if (!widget.dragosPath) continue;
-			if (widget.hidden) continue;
-			if (widget.value === "" || widget.value == null) continue;
+                for (const widget of node.widgets || [])
+                {
+                        if (!widget.dragosPath) continue;
+                        if (widget.hidden) continue;
+                        if (widget.value === "" || widget.value == null) continue;
 
-			const parts = widget.dragosPath.split(".");
-			let current = result;
+                        const parts = widget.dragosPath.split(".");
+                        let current = result;
 
-			for (let i = 0; i < parts.length - 1; i++)
-			{
-				const part = parts[i];
+                        for (let i = 0; i < parts.length - 1; i++)
+                        {
+                                const part = parts[i];
 
-				if (!(part in current))
-					current[part] = {};
+                                if (!(part in current))
+                                        current[part] = {};
 
-				current = current[part];
-			}
+                                current = current[part];
+                        }
 
-			current[parts[parts.length - 1]] = widget.value;
-		}
+                        current[parts[parts.length - 1]] = widget.value;
+                }
 
-		return result;
-	}
+                // Now merge any connected inputs (DragosVariable or DragosObject)
+                if (node.inputs)
+                {
+                        for (const input of node.inputs)
+                        {
+                                if (!input || input.link == null) continue;
+                                if (!input.name || !input.name.startsWith("input_")) continue;
 
-	if (node.comfyClass === "DragosObject")
-	{
-		const result = {};
+                                const link = graph.links[input.link];
+                                if (!link) continue;
 
-		for (const input of node.inputs || [])
-		{
-			if (input.link == null) continue;
+                                const origin = graph.getNodeById(link.origin_id);
+                                if (!origin || !isNodeActive(origin)) continue;
 
-			const link = graph.links[input.link];
-			if (!link) continue;
+                                // Get the name from the connected node
+                                const inputName = getWidgetValue(origin, ["var_name", "obj_name"]);
+                                const inputValue = getValueRecursive(origin, graph);
 
-			const origin = graph.getNodeById(link.origin_id);
-			if (!isNodeActive(origin)) continue;
+                                if (inputName && inputValue !== undefined)
+                                {
+                                        // If it's a simple value, add/override directly
+                                        // If it's an object, merge it
+                                        if (typeof inputValue === "object" && inputValue !== null)
+                                        {
+                                                result[inputName] = deepMergeObjects(result[inputName] || {}, inputValue);
+                                        }
+                                        else
+                                        {
+                                                result[inputName] = inputValue;
+                                        }
+                                }
+                        }
+                }
 
-			const key =
-				getWidgetValue(origin, ["var_name", "obj_name"])
-				?? input.name;
+                return result;
+        }
 
-			const value = getValueRecursive(origin, graph);
+        if (node.comfyClass === "DragosObject")
+        {
+                const result = {};
 
-			if (value !== undefined)
-				result[key] = value;
-		}
+                for (const input of node.inputs || [])
+                {
+                        if (input.link == null) continue;
 
-		return result;
-	}
+                        const link = graph.links[input.link];
+                        if (!link) continue;
 
-	return undefined;
+                        const origin = graph.getNodeById(link.origin_id);
+                        if (!isNodeActive(origin)) continue;
+
+                        const key =
+                                getWidgetValue(origin, ["var_name", "obj_name"])
+                                ?? input.name;
+
+                        const value = getValueRecursive(origin, graph);
+
+                        if (value !== undefined)
+                                result[key] = value;
+                }
+
+                return result;
+        }
+
+        return undefined;
 }
 
 
@@ -238,7 +300,15 @@ function refreshNode(node, graph, previewWidget, syncPreviewHeight)
                 const key =
                     `character_${characterCount}`;
 
-                scene[key] = entry.value;
+                // Check if key already exists and merge if both are objects
+                if (scene[key] && typeof scene[key] === "object" && typeof entry.value === "object")
+                {
+                        scene[key] = deepMergeObjects(scene[key], entry.value);
+                }
+                else
+                {
+                        scene[key] = entry.value;
+                }
 
                 entry.sceneKey = key;
             }
@@ -246,7 +316,15 @@ function refreshNode(node, graph, previewWidget, syncPreviewHeight)
             {
                 const key = entry.category;
 
-                scene[key] = entry.value;
+                // Check if key already exists and merge if both are objects
+                if (scene[key] && typeof scene[key] === "object" && typeof entry.value === "object")
+                {
+                        scene[key] = deepMergeObjects(scene[key], entry.value);
+                }
+                else
+                {
+                        scene[key] = entry.value;
+                }
 
                 entry.sceneKey = key;
             }
@@ -280,10 +358,8 @@ function refreshNode(node, graph, previewWidget, syncPreviewHeight)
             if (!scene[targetKey])
                 scene[targetKey] = {};
 
-            Object.assign(
-                scene[targetKey],
-                entry.value
-            );
+            // Use deep merge instead of Object.assign for nested objects
+            scene[targetKey] = deepMergeObjects(scene[targetKey], entry.value);
 
             break;
         }
@@ -378,248 +454,250 @@ function refreshNode(node, graph, previewWidget, syncPreviewHeight)
 
 
 
-	////////////////////////////////////////////////////////////
-	// STEP 8 — Dynamic inputs (CORRECT INDEX-SAFE VERSION)
-	////////////////////////////////////////////////////////////
-	
-	const dynamicInputs = node.inputs
-		.map((slot, realIndex) => ({
-			slot,
-			realIndex,
-			index: (
-				slot &&
-				slot.name &&
-				slot.name.startsWith("input_")
-			)
-				? parseInt(slot.name.substring(6)) || 0
-				: -1
-		}))
-		.filter(x => x.index >= 0)
-		.sort((a, b) => a.index - b.index);
-	
-	
-	if (dynamicInputs.length === 0)
-		return;
-	
-	
-	let changed = false;
-	
-	
-	////////////////////////////////////////////////////////////
-	// Add new slot if last is connected
-	////////////////////////////////////////////////////////////
-	
-	const last = dynamicInputs[dynamicInputs.length - 1];
-	
-	if (last.slot.link != null)
-	{
-		node.addInput(
-			`input_${last.index + 1}`,
-			"PROMPT_VAR"
-		);
-	
-		changed = true;
-	}
-	
-	
-	////////////////////////////////////////////////////////////
-	// Remove trailing empty slots SAFELY using REAL INDEX
-	////////////////////////////////////////////////////////////
-	
-	while (dynamicInputs.length > 1)
-	{
-		const lastEntry =
-			dynamicInputs[dynamicInputs.length - 1];
-	
-		const prevEntry =
-			dynamicInputs[dynamicInputs.length - 2];
-	
-		if (
-			lastEntry.slot.link == null &&
-			prevEntry.slot.link == null
-		)
-		{
-			// find CURRENT real index (important)
-			const currentRealIndex =
-				node.inputs.findIndex(
-					s => s === lastEntry.slot
-				);
-	
-			if (currentRealIndex !== -1)
-			{
-				node.removeInput(currentRealIndex);
-	
-				dynamicInputs.pop();
-	
-				changed = true;
-	
-				continue;
-			}
-		}
-	
-		break;
-	}
-	
-	
-	if (changed)
-	{
-		node.setDirtyCanvas(true, true);
-	}
+        ////////////////////////////////////////////////////////////
+        // STEP 8 — Dynamic inputs (CORRECT INDEX-SAFE VERSION)
+        ////////////////////////////////////////////////////////////
+        
+        const dynamicInputs = node.inputs
+                .map((slot, realIndex) => ({
+                        slot,
+                        realIndex,
+                        index: (
+                                slot &&
+                                slot.name &&
+                                slot.name.startsWith("input_")
+                        )
+                                ? parseInt(slot.name.substring(6)) || 0
+                                : -1
+                }))
+                .filter(x => x.index >= 0)
+                .sort((a, b) => a.index - b.index);
+        
+        
+        if (dynamicInputs.length === 0)
+                return;
+        
+        
+        let changed = false;
+        
+        
+        ////////////////////////////////////////////////////////////
+        // Add new slot if last is connected
+        ////////////////////////////////////////////////////////////
+        
+        const last = dynamicInputs[dynamicInputs.length - 1];
+        
+        if (last.slot.link != null)
+        {
+                node.addInput(
+                        `input_${last.index + 1}`,
+                        "PROMPT_VAR"
+                );
+        
+                changed = true;
+        }
+        
+        
+        ////////////////////////////////////////////////////////////
+        // Remove trailing empty slots SAFELY using REAL INDEX
+        ////////////////////////////////////////////////////////////
+        
+        while (dynamicInputs.length > 1)
+        {
+                const lastEntry =
+                        dynamicInputs[dynamicInputs.length - 1];
+        
+                const prevEntry =
+                        dynamicInputs[dynamicInputs.length - 2];
+        
+                if (
+                        lastEntry.slot.link == null &&
+                        prevEntry.slot.link == null
+                )
+                {
+                        // find CURRENT real index (important)
+                        const currentRealIndex =
+                                node.inputs.findIndex(
+                                        s => s === lastEntry.slot
+                                );
+        
+                        if (currentRealIndex !== -1)
+                        {
+                                node.removeInput(currentRealIndex);
+        
+                                dynamicInputs.pop();
+        
+                                changed = true;
+        
+                                continue;
+                        }
+                }
+        
+                break;
+        }
+        
+        
+        if (changed)
+        {
+                node.setDirtyCanvas(true, true);
+        }
 }
 
 
 
 app.registerExtension({
 
-	name: "Dragos.SceneBuilder.Dynamic",
+        name: "Dragos.SceneBuilder.Dynamic",
 
-	async nodeCreated(node)
-	{
-		if (
-			node.comfyClass !== "DragosObject"
-			&&
-			node.comfyClass !== "DragosSceneCompiler"
-		) return;
+        async nodeCreated(node)
+        {
+                if (
+                        node.comfyClass !== "DragosObject"
+                        &&
+                        node.comfyClass !== "DragosSceneCompiler"
+                        &&
+                        node.comfyClass !== "DragosStructuredBuilder"
+                ) return;
 
-		let previewWidget = null;
-		let syncPreviewHeight = null;
+                let previewWidget = null;
+                let syncPreviewHeight = null;
 
-		if (node.comfyClass === "DragosSceneCompiler")
-		{
-			previewWidget =
-				ComfyWidgets.STRING(
-					node,
-					"preview",
-					["STRING", { multiline: true }],
-					app
-				).widget;
+                if (node.comfyClass === "DragosSceneCompiler")
+                {
+                        previewWidget =
+                                ComfyWidgets.STRING(
+                                        node,
+                                        "preview",
+                                        ["STRING", { multiline: true }],
+                                        app
+                                ).widget;
 
-			previewWidget.inputEl.readOnly = true;
-			previewWidget.inputEl.style.fontSize = "11px";
-			previewWidget.inputEl.style.resize = "none";
-
-
-			syncPreviewHeight = function()
-			{
-				if (!previewWidget?.inputEl) return;
-				if (!node.size) return;
-
-				const HEADER = LiteGraph.NODE_TITLE_HEIGHT || 30;
-				const SLOT = LiteGraph.NODE_SLOT_HEIGHT || 20;
-				const PADDING = 10;
-
-				let widgetY = HEADER;
-
-				for (const w of node.widgets)
-				{
-					if (w === previewWidget) break;
-
-					const size = w.computeSize?.(node.size[0]);
-					widgetY += (size?.[1] || SLOT) + 4;
-				}
-
-				const inputsHeight =
-					(node.inputs?.length || 0) * SLOT;
-
-				const available =
-					node.size[1]
-					- widgetY
-					- inputsHeight
-					- PADDING;
-
-				previewWidget.inputEl.style.height =
-					Math.max(available, 50) + "px";
-			};
+                        previewWidget.inputEl.readOnly = true;
+                        previewWidget.inputEl.style.fontSize = "11px";
+                        previewWidget.inputEl.style.resize = "none";
 
 
-			const origOnResize = node.onResize;
+                        syncPreviewHeight = function()
+                        {
+                                if (!previewWidget?.inputEl) return;
+                                if (!node.size) return;
 
-			node.onResize = function()
-			{
-				if (origOnResize)
-					origOnResize.apply(this, arguments);
+                                const HEADER = LiteGraph.NODE_TITLE_HEIGHT || 30;
+                                const SLOT = LiteGraph.NODE_SLOT_HEIGHT || 20;
+                                const PADDING = 10;
 
-				syncPreviewHeight();
-			};
+                                let widgetY = HEADER;
 
+                                for (const w of node.widgets)
+                                {
+                                        if (w === previewWidget) break;
 
-						// force correct node size first
-			requestAnimationFrame(() =>
-			{
-				if (node.computeSize)
-				{
-					const newSize = node.computeSize();
-					node.setSize(newSize);
-				}
-			
-				syncPreviewHeight();
-			
-				node.setDirtyCanvas(true, true);
-			});
-			
-			setTimeout(() =>
-			{
-				if (node.computeSize)
-				{
-					const newSize = node.computeSize();
-					node.setSize(newSize);
-				}
-			
-				syncPreviewHeight();
-			
-				node.setDirtyCanvas(true, true);
-			
-			}, 100);
-		}
+                                        const size = w.computeSize?.(node.size[0]);
+                                        widgetY += (size?.[1] || SLOT) + 4;
+                                }
+
+                                const inputsHeight =
+                                        (node.inputs?.length || 0) * SLOT;
+
+                                const available =
+                                        node.size[1]
+                                        - widgetY
+                                        - inputsHeight
+                                        - PADDING;
+
+                                previewWidget.inputEl.style.height =
+                                        Math.max(available, 50) + "px";
+                        };
 
 
-		const graph = app.graph;
+                        const origOnResize = node.onResize;
 
-		const update = () =>
-			refreshNode(
-				node,
-				graph,
-				previewWidget,
-				syncPreviewHeight
-			);
+                        node.onResize = function()
+                        {
+                                if (origOnResize)
+                                        origOnResize.apply(this, arguments);
 
-
-		const origConnectionsChange = node.onConnectionsChange;
-
-		node.onConnectionsChange = function ()
-		{
-			if (origConnectionsChange)
-				origConnectionsChange.apply(this, arguments);
-
-			update();
-		};
+                                syncPreviewHeight();
+                        };
 
 
-		const origWidgetChanged = node.onWidgetChanged;
+                                                // force correct node size first
+                        requestAnimationFrame(() =>
+                        {
+                                if (node.computeSize)
+                                {
+                                        const newSize = node.computeSize();
+                                        node.setSize(newSize);
+                                }
+                        
+                                syncPreviewHeight();
+                        
+                                node.setDirtyCanvas(true, true);
+                        });
+                        
+                        setTimeout(() =>
+                        {
+                                if (node.computeSize)
+                                {
+                                        const newSize = node.computeSize();
+                                        node.setSize(newSize);
+                                }
+                        
+                                syncPreviewHeight();
+                        
+                                node.setDirtyCanvas(true, true);
+                        
+                        }, 100);
+                }
 
-		node.onWidgetChanged = function ()
-		{
-			if (origWidgetChanged)
-				origWidgetChanged.apply(this, arguments);
 
-			update();
-		};
+                const graph = app.graph;
 
-
-		const timer = setInterval(() =>
-		{
-			if (!graph._nodes.includes(node))
-			{
-				clearInterval(timer);
-				return;
-			}
-
-			update();
-
-		}, 500);
+                const update = () =>
+                        refreshNode(
+                                node,
+                                graph,
+                                previewWidget,
+                                syncPreviewHeight
+                        );
 
 
-		update();
-	}
+                const origConnectionsChange = node.onConnectionsChange;
+
+                node.onConnectionsChange = function ()
+                {
+                        if (origConnectionsChange)
+                                origConnectionsChange.apply(this, arguments);
+
+                        update();
+                };
+
+
+                const origWidgetChanged = node.onWidgetChanged;
+
+                node.onWidgetChanged = function ()
+                {
+                        if (origWidgetChanged)
+                                origWidgetChanged.apply(this, arguments);
+
+                        update();
+                };
+
+
+                const timer = setInterval(() =>
+                {
+                        if (!graph._nodes.includes(node))
+                        {
+                                clearInterval(timer);
+                                return;
+                        }
+
+                        update();
+
+                }, 500);
+
+
+                update();
+        }
 
 });

@@ -193,6 +193,27 @@ class DragosObjectNode:
         },)
 
 
+def deep_merge(base_dict, merge_dict):
+    """
+    Deep merge merge_dict into base_dict.
+    - If a key exists in both and both values are dicts, merge recursively
+    - Otherwise, merge_dict's value overwrites base_dict's value
+    """
+    result = dict(base_dict)  # shallow copy
+    
+    for key, value in merge_dict.items():
+        if (
+            key in result
+            and isinstance(result[key], dict)
+            and isinstance(value, dict)
+        ):
+            result[key] = deep_merge(result[key], value)
+        else:
+            result[key] = value
+    
+    return result
+
+
 class DragosSceneCompiler:
 
     @classmethod
@@ -248,7 +269,14 @@ class DragosSceneCompiler:
         for key, v in kwargs.items():
             unwrapped = self._unwrap_prompt_var(v)
             if isinstance(unwrapped, dict) and "name" in unwrapped and "value" in unwrapped:
-                scene[unwrapped["name"]] = unwrapped["value"]
+                entry_name = unwrapped["name"]
+                entry_value = unwrapped["value"]
+                
+                # Check if key already exists and merge if both are dicts
+                if entry_name in scene and isinstance(scene[entry_name], dict) and isinstance(entry_value, dict):
+                    scene[entry_name] = deep_merge(scene[entry_name], entry_value)
+                else:
+                    scene[entry_name] = entry_value
 
         json_out = json.dumps(scene, indent="\t", ensure_ascii=False)
 
@@ -268,12 +296,19 @@ class DragosStructuredBuilderNode:
             "required": {
                 "category": (load_schema_categories(),),
             },
+            "optional": {
+                "input_1": (PROMPT_VAR_TYPE, {"forceInput": True}),
+            },
             "hidden": {
                 "json_data": ("STRING",),
             }
         }
 
-    def build(self, category, json_data):
+    @classmethod
+    def VALIDATE_INPUTS(cls, **kwargs):
+        return True
+
+    def build(self, category, json_data, **kwargs):
     
         try:
             parsed = json.loads(json_data) if json_data else {}
@@ -281,10 +316,21 @@ class DragosStructuredBuilderNode:
             parsed = {}
     
         meta = parsed.get("_meta", {})
-        data = parsed.get("data", {})
+        base_data = parsed.get("data", {})
+        
+        # Collect all input values from kwargs (dynamic inputs)
+        input_values = {}
+        for v in kwargs.values():
+            if not is_valid_prompt_var(v):
+                continue
+            input_values[v["name"]] = v["value"]
+        
+        # Merge input values with base data
+        # Input values override base data
+        merged_data = deep_merge(base_data, input_values)
     
         return ({
             "name": meta.get("category", category),
-            "value": data,
+            "value": merged_data,
             "_meta": meta
         },)

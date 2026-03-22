@@ -140,6 +140,7 @@
 				"yes",
 				"no"
 			],
+			"errection": ["flaccid", "half-eferct", "fully-erect"],
 			"pubic_hair": {
 				"presence": ["","yes", "no"],
 				"density": ["", "sparse", "moderate", "dense"],
