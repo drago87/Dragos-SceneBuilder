@@ -578,36 +578,40 @@ app.registerExtension({
 
 
                         syncPreviewHeight = function()
-                        {
-                                if (!previewWidget?.inputEl) return;
-                                if (!node.size) return;
-
-                                const HEADER = LiteGraph.NODE_TITLE_HEIGHT || 30;
-                                const SLOT = LiteGraph.NODE_SLOT_HEIGHT || 20;
-                                const PADDING = 10;
-
-                                let widgetY = HEADER;
-
-                                for (const w of node.widgets)
-                                {
-                                        if (w === previewWidget) break;
-
-                                        const size = w.computeSize?.(node.size[0]);
-                                        widgetY += (size?.[1] || SLOT) + 4;
-                                }
-
-                                const inputsHeight =
-                                        (node.inputs?.length || 0) * SLOT;
-
-                                const available =
-                                        node.size[1]
-                                        - widgetY
-                                        - inputsHeight
-                                        - PADDING;
-
-                                previewWidget.inputEl.style.height =
-                                        Math.max(available, 50) + "px";
-                        };
+						{
+							if (!previewWidget?.inputEl) return;
+							if (!node.size) return;
+						
+							const HEADER = LiteGraph.NODE_TITLE_HEIGHT || 30;
+							const SLOT = LiteGraph.NODE_SLOT_HEIGHT || 20;
+							const WIDGET_SPACING = 4;
+							const BOTTOM_PADDING = 5; // Creates the consistent buffer at the bottom
+						
+							let widgetY = HEADER;
+						
+							// Calculate the Y position where the preview widget starts
+							for (const w of node.widgets)
+							{
+								if (w === previewWidget) break;
+								const size = w.computeSize?.(node.size[0]);
+								widgetY += (size?.[1] || 20) + WIDGET_SPACING;
+							}
+						
+							// Calculate height occupied by inputs on the left
+							// We subtract this to create the "buffer" so the text box doesn't overlap the inputs area
+							const inputCount = node.inputs?.length || 0;
+							const inputsHeight = inputCount * SLOT;
+						
+							// Calculate available height
+							// Node Height - (Widgets Above) - (Inputs Height) - (Bottom Padding)
+							const available = node.size[1] - widgetY - inputsHeight - BOTTOM_PADDING;
+						
+							// Set height.
+							// We use Math.max(20) instead of 50. 
+							// This allows the box to be small enough to FIT in small nodes (fixing Image_1)
+							// while the calculation above ensures it stops before the inputs (fixing Image_3).
+							previewWidget.inputEl.style.height = Math.max(available, 20) + "px";
+						};
 
 
                         const origOnResize = node.onResize;

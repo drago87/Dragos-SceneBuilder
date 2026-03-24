@@ -50,7 +50,8 @@
 
 		"direction": [
 			"front",
-			"side",
+			"right",
+			"left",
 			"back",
 			"top",
 			"bottom"
