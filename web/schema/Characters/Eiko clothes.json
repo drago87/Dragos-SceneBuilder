@@ -1,0 +1,18 @@
+{
+	"_meta": {
+		"extension": "Character"
+	},
+	"clothing": {
+		"nude": "No",
+		"headwear": "large yellow ribbon",
+		"top": "red upper garment covering arms, shoulders, and upper chest",
+		"base_layer": "pink jumpsuit worn under other clothes",
+		"bottom": "yellow baggy workwear overalls reaching just above the knees (leves stomach section bare showing anything under it) with braces connecting to a chest plate (only covers the breast area)",
+		"footwear": "big baggy boots, white on top and brown at the bottom",
+		"accessories": "",
+		"underwear": {
+			"bra": "white cotton",
+			"panties": "white cotton"
+		}
+	}
+}

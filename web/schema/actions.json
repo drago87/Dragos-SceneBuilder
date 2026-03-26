@@ -3,9 +3,9 @@
 		"extension": "character"
 	},
 	"actions": {
-		"primary": "string",
-		"secondary": "string",
-		"tertiary": "string",
-		"quaternary": "string"
+		"primary": "",
+		"secondary": "",
+		"tertiary": "",
+		"quaternary": ""
 	}
 }

@@ -98,15 +98,31 @@ class DragosPromptLoaderNode:
 
 
 def load_schema_categories():
-
+    categories = []
+    
     if not os.path.exists(SCHEMA_DIR):
         return ["character"]
 
-    return [
-        f.replace(".json", "")
-        for f in os.listdir(SCHEMA_DIR)
-        if f.endswith(".json")
-    ]
+    # Walk through the schema directory and all subdirectories
+    for root, dirs, files in os.walk(SCHEMA_DIR):
+        for file in files:
+            if file.endswith(".json"):
+                # Get the full path of the file
+                full_path = os.path.join(root, file)
+                
+                # Get the path relative to the SCHEMA_DIR
+                rel_path = os.path.relpath(full_path, SCHEMA_DIR)
+                
+                # Remove the .json extension
+                name = os.path.splitext(rel_path)[0]
+                
+                # Normalize path separators to forward slashes for web URLs
+                # (Windows uses backslashes, web needs forward slashes)
+                name = name.replace("\\", "/")
+                
+                categories.append(name)
+
+    return sorted(categories)
 
 
 def is_valid_prompt_var(v):

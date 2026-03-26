@@ -585,7 +585,7 @@ app.registerExtension({
 							const HEADER = LiteGraph.NODE_TITLE_HEIGHT || 30;
 							const SLOT = LiteGraph.NODE_SLOT_HEIGHT || 20;
 							const WIDGET_SPACING = 4;
-							const BOTTOM_PADDING = 5; // Creates the consistent buffer at the bottom
+							const BOTTOM_PADDING = 15; // Creates the consistent buffer at the bottom
 						
 							let widgetY = HEADER;
 						
@@ -600,7 +600,7 @@ app.registerExtension({
 							// Calculate height occupied by inputs on the left
 							// We subtract this to create the "buffer" so the text box doesn't overlap the inputs area
 							const inputCount = node.inputs?.length || 0;
-							const inputsHeight = inputCount * SLOT;
+							const inputsHeight = inputCount * SLOT - SLOT;
 						
 							// Calculate available height
 							// Node Height - (Widgets Above) - (Inputs Height) - (Bottom Padding)

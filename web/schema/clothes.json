@@ -4,13 +4,13 @@
 	},
 	"clothing": {
 		"nude": ["No", "Yes"],
-		"top": "string",
-		"bottom": "string",
-		"footwear": "string",
-		"accessories": "string",
+		"top": "",
+		"bottom": "",
+		"footwear": "",
+		"accessories": "",
 		"underwear": {
-			"bra": "string",
-			"panties": "string"
+			"bra": "",
+			"panties": ""
 		}
 	}
 }

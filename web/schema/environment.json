@@ -15,7 +15,7 @@
 		"sci-fi"
 	],
 
-	"setting": "string",
+	"setting": "",
 
 	"time_of_day": [
 		"morning",
@@ -67,7 +67,7 @@
 
 	"foreground": {
 
-		"elements": "string",
+		"elements": "",
 
 		"depth": [
 			"close",
@@ -94,7 +94,7 @@
 			"sci-fi"
 		],
 
-		"elements": "string",
+		"elements": "",
 
 		"depth": [
 			"shallow",

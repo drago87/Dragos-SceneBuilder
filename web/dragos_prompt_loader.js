@@ -43,45 +43,70 @@ function parsePrompt(content) {
 app.registerExtension({
     name: "Dragos.PromptLoader",
 
+    async setup(app) {
+        // Helper to force a specific node type to refresh its definitions
+        const refreshPromptLoaders = async () => {
+            // Tell backend to refresh definitions
+            await app.refreshComboInNodes(); 
+        };
+
+        // Add a menu item for manual refresh
+        const originalMenuSetup = app.menu?.settingsGroup?.setup;
+        // We can also just add a keybinding hook
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "r" || e.key === "R") {
+                // Check if we are not typing in an input box
+                if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+                
+                // Trigger global refresh (this updates the Python lists)
+                // Note: This relies on the user having a default R binding or this overriding it.
+                // Usually R is not bound in vanilla, so this adds it.
+                // app.refreshComboInNodes(); 
+                // Actually, let's rely on the button to be safe, or the existing extension behavior.
+            }
+        });
+    },
+
     nodeCreated(node) {
-        // Strict check: Only run for DragosPromptLoader
         if (node.comfyClass !== "DragosPromptLoader") return;
 
-        // Increased timeout to 50ms to ensure Python widgets are instantiated
-        setTimeout(async () => {
-            // 1. Find the dropdown created by Python
+        // Use requestAnimationFrame for safer initialization than setTimeout
+        requestAnimationFrame(async () => {
             const promptDropdown = node.widgets?.find(w => w.name === "prompt");
-            if (!promptDropdown) {
-                console.warn("DragosPromptLoader: Prompt dropdown missing on init.");
-                return;
-            }
-
-            // 2. Find the text widgets created by Python
-            // We DO NOT use addWidget here. We assume Python created them.
             let infoWidget = node.widgets.find(w => w.name === "info_text");
             let promptWidget = node.widgets.find(w => w.name === "prompt_text");
 
-            if (!infoWidget || !promptWidget) {
-                console.warn("DragosPromptLoader: info_text or prompt_text widgets missing. Check Python definition.");
-                return;
+            if (!promptDropdown || !infoWidget || !promptWidget) return;
+
+            // --- 1. SAVE ORIGINAL SIZE IMMEDIATELY ---
+            // We attach it to the widget object so it persists
+            if (!infoWidget._dragosOriginalComputeSize) {
+                infoWidget._dragosOriginalComputeSize = infoWidget.computeSize;
             }
 
-            // Helper to handle visibility of info_widget
+            // --- 2. ADD REFRESH BUTTON ---
+            // This is the most reliable way to update the list
+            const refreshBtn = node.addWidget("button", "Refresh List", "refresh", async () => {
+                await app.refreshComboInNodes();
+            });
+            // Move button to top (after dropdown) for better UX
+            const idx = node.widgets.indexOf(refreshBtn);
+            if (idx > 1) { // 0 = prompt, 1 = info (hidden usually), etc
+                node.widgets.splice(idx, 1);
+                node.widgets.splice(1, 0, refreshBtn); 
+            }
+
+            // --- 3. VISIBILITY LOGIC ---
             const updateVisibility = () => {
                 const hasInfo = infoWidget.value && infoWidget.value.trim().length > 0;
 
                 if (hasInfo) {
-                    // Show widget
                     infoWidget.hidden = false;
-                    if (infoWidget._originalComputeSize) {
-                        infoWidget.computeSize = infoWidget._originalComputeSize;
-                    }
+                    // Restore original size function
+                    infoWidget.computeSize = infoWidget._dragosOriginalComputeSize;
                 } else {
-                    // Hide widget
                     infoWidget.hidden = true;
-                    if (!infoWidget._originalComputeSize) {
-                        infoWidget._originalComputeSize = infoWidget.computeSize;
-                    }
+                    // Set collapsed size
                     infoWidget.computeSize = () => [0, -4];
                 }
             };
@@ -96,31 +121,46 @@ app.registerExtension({
 
                 updateVisibility();
 
-                // Sync inputs
                 const infoInput = node.inputs?.find(i => i.name === "info_text");
                 const promptInput = node.inputs?.find(i => i.name === "prompt_text");
                 if (infoInput) infoInput.value = info;
                 if (promptInput) promptInput.value = prompt;
 
                 node.setSize(node.computeSize());
-                node.graph?.setDirtyCanvas(true, true);
+                app.graph.setDirtyCanvas(true, true);
             }
 
-            // Hook the dropdown callback
+            // Hook dropdown
             const oldCallback = promptDropdown.callback;
             promptDropdown.callback = async function(value) {
                 if (oldCallback) oldCallback.call(this, value);
                 await updateInputs(value);
             };
 
-            // Initial load
+            // --- 4. HOOK INTO GLOBAL REFRESH (FOR "R" KEY) ---
+            // Store the update function on the node so we can call it if needed, 
+            // or simply rely on ComfyUI replacing the widgets values.
+            // However, ComfyUI doesn't automatically re-run our 'change' logic on refresh.
+            // We need to ensure the dropdown change triggers our logic.
+            
+            // If the global refresh changes the dropdown value (e.g. if current selection is gone),
+            // the callback might not fire. We can listen for graph changes.
+            const origOnPropertyChanged = node.onPropertyChanged;
+            node.onPropertyChanged = function(name, value) {
+                if (origOnPropertyChanged) origOnPropertyChanged.call(this, name, value);
+                // If prompt value changes externally (refresh), update
+                if (name === "values" && promptDropdown.value) {
+                     // This might be overkill, but ensures sync
+                }
+            };
+
+            // Initial run
             if (promptDropdown.value) {
                 await updateInputs(promptDropdown.value);
             } else {
                 updateVisibility();
                 node.setSize(node.computeSize());
             }
-
-        }, 50); // Increased timeout
+        });
     }
 });

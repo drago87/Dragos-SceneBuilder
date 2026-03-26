@@ -3,8 +3,9 @@
 		"display_name": "Character",
 		"gender": "Female"
 	},
-	"name":"",
-	"age":"",
+	"name": "Eiko Carol",
+	"age": "6",
+	"from": "Final Fantasy IX (FF9)",
 	"placement": {
 		"frame_position": [
 			"center",
@@ -37,146 +38,35 @@
 			"three-quarter left",
 			"three-quarter right"
 		],
-		"relative_to":  ""
+		"relative_to": ""
 	},
 	"appearance": {
-		"body_form": [
-			"",
-			"slim",
-			"athletic",
-			"toned",
-			"curvy",
-			"hourglass",
-			"pear-shaped",
-			"petite",
-			"tall",
-			"plump",
-			"voluptuous",
-			"other"
-		],
-		"face_form": [
-			"",
-			"oval",
-			"round",
-			"heart-shaped",
-			"square",
-			"diamond",
-			"long",
-			"angular",
-			"soft",
-			"other"
-		],
+		"physique": {
+			"build": "petite, child",
+			"height": "short"
+		},
+		"face_form": "round, youthful",
 		"skin": {
-			"tone": [
-				"",
-				"pale",
-				"fair",
-				"tan",
-				"olive",
-				"brown",
-				"dark",
-				"ebony",
-				"other"
-			],
-			"details": [
-				"",
-				"freckles",
-				"moles",
-				"birthmarks",
-				"scars",
-				"tattoos",
-				"piercings",
-				"clear",
-				"other"
-			]
+			"tone": "fair",
+			"details": ""
 		},
 		"eyes": {
-			"left": {
-				"color": [
-					"",
-					"blue",
-					"brown",
-					"green",
-					"hazel",
-					"gray",
-					"amber",
-					"other"
-				],
-				"shape": [
-					"",
-					"almond",
-					"round",
-					"hooded",
-					"upturned",
-					"downturned",
-					"wide-set",
-					"other"
-				]
-			},
-			"right": {
-				"color": [
-					"",
-					"blue",
-					"brown",
-					"green",
-					"hazel",
-					"gray",
-					"amber",
-					"other"
-				],
-				"shape": [
-					"",
-					"almond",
-					"round",
-					"hooded",
-					"upturned",
-					"downturned",
-					"wide-set",
-					"other"
-				]
-			}
+			"color": "teal",
+			"shape": "large, round"
 		},
 		"head_hair": {
-			"presence": ["Yes", "No"],
-			"style": [
-				"",
-				"straight",
-				"wavy",
-				"curly",
-				"coily",
-				"pixie cut",
-				"bob",
-				"shoulder-length",
-				"long",
-				"ponytail",
-				"braids",
-				"bun",
-				"other"
-			],
-			"color": [
-				"",
-				"blonde",
-				"brunette",
-				"black",
-				"red",
-				"platinum",
-				"auburn",
-				"gray",
-				"dyed-unnatural",
-				"other"
-			],
-			"length": [
-				"",
-				"shaved",
-				"short",
-				"medium",
-				"long",
-				"very long",
-				"other"
-			]
+			"presence": "Yes",
+			"style": "chin-length bob cut",
+			"color": "purple",
+			"length": "short"
+		},
+		"distinguishing_features": {
+			"horn": "red summoner's horn centered on forehead",
+			"wings": "small white feathered wings on upper back"
 		}
 	},
 	"anatomy": {
+		"body_type": "child",
 		"mons_pubis": {
 			"size":["","small","medium","large"],
 			"shape":["","flat","rounded","prominent"],

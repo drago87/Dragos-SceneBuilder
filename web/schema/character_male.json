@@ -3,7 +3,7 @@
 		"display_name": "Character",
 		"gender": "Male"
 	},
-	"name":"string",
+	"name":"",
 	"age":"",
 	"placement": {
 		"frame_position": [
