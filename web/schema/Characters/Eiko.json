@@ -61,7 +61,7 @@
 			"length": "short"
 		},
 		"distinguishing_features": {
-			"horn": "red summoner's horn centered on forehead"
+			"horn": "summoner's horn is naturally growing from the center of the forehead. It is lighter then her skin in color"
 		}
 	},
 	"anatomy": {
@@ -80,7 +80,7 @@
 			"size":["","small","medium","large"],
 			"thickness":["","thin","average","thick"],
 			"symmetry":["","symmetric","slightly asymmetric","asymmetric"],
-			"shape":["","slit","rounded","full"],
+			"shape":["","closed slit","slit","rounded","full"],
 			"fullness":["","flat","moderate","full"],
 			"texture":["","smooth","soft","wrinkled"]
 		},

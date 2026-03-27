@@ -89,11 +89,13 @@
 		],
 
 		"target": [
+			"",
 			"eyes",
 			"face",
 			"body",
 			"foreground",
-			"background"
+			"background",
+			"other"
 		]
 	},
 

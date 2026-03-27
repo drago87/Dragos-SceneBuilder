@@ -63,23 +63,33 @@ function applyWidgetVisibility(node) {
 // Show popup for "other" dropdown values
 //
 function attachOtherHandler(widget) {
-		widget.callback = () => {
-				if (widget.value === "other") {
-						const userInput = prompt(`Enter custom value for ${widget.name}:`, "");
-						if (userInput !== null && userInput !== "") {
-								widget.value = userInput;
-						} else {
-								widget.value = widget.options.values[0] || "";
-						}
-						evaluateConditions(widget.node);
-						applyWidgetVisibility(widget.node);
-						app.graph.setDirtyCanvas(true, true);
-				} else {
-						evaluateConditions(widget.node);
-						applyWidgetVisibility(widget.node);
-						app.graph.setDirtyCanvas(true, true);
-				}
-		};
+	// Store the original callback if it exists
+	const origCallback = widget.callback;
+
+	widget.callback = () => {
+		// Run the original callback first
+		if (origCallback) {
+			origCallback.call(widget);
+		}
+
+		// Check if the selected value is "other"
+		if (widget.value === "other") {
+			const userInput = prompt(`Enter custom value for ${widget.name}:`, "");
+			
+			if (userInput !== null && userInput !== "") {
+				// Set the widget value to the custom input
+				widget.value = userInput;
+			} else {
+				// If cancelled or empty, revert to the first option
+				widget.value = widget.options.values[0] || "";
+			}
+		}
+
+		// Trigger visibility update in case conditions depend on this value
+		evaluateConditions(widget.node);
+		applyWidgetVisibility(widget.node);
+		app.graph.setDirtyCanvas(true, true);
+	};
 }
 
 //
@@ -114,9 +124,14 @@ function buildWidgetsFromSchema(node, schema, path = "", inheritedConditions = {
 				"combo",
 				label,
 				value[0],
-				() => attachOtherHandler(widget),
+				// We pass null here because we will attach the handler manually below
+				null, 
 				{ values: value }
 			);
+			
+			// Attach the "other" popup handler
+			attachOtherHandler(widget);
+
 			widget.dragosPath = fullPath;
 			widget.dragosConditions = { ...mergedConditions };
 			continue;
