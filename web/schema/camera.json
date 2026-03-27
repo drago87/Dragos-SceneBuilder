@@ -85,7 +85,8 @@
 			"sharp",
 			"soft",
 			"shallow depth of field",
-			"deep depth of field"
+			"deep depth of field",
+			"hyperfocal"
 		],
 
 		"target": [
