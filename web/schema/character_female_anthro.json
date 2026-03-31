@@ -1,0 +1,299 @@
+{
+	"_meta": {
+		"display_name": "Character"
+	},
+	"_static": {
+		"gender": "Female",
+		"character_type": "Anthromorphic"
+	},
+	"name": "",
+	"age": "",
+	"from": "",
+	"species": {
+		"type": [
+			"",
+			"canine",
+			"feline",
+			"vulpine",
+			"lapine",
+			"rodent",
+			"ungulate",
+			"mustelid",
+			"avian",
+			"reptile",
+			"amphibian",
+			"dragon",
+			"marsupial",
+			"hybrid",
+			"other"
+		],
+		"hybrid_note": ""
+	},
+	"placement": {
+		"frame_position": [
+			"center",
+			"left",
+			"right",
+			"top",
+			"bottom",
+			"top-left",
+			"top-right",
+			"bottom-left",
+			"bottom-right"
+		],
+		"proximity_to_camera": [
+			"",
+			"foreground",
+			"midground",
+			"background",
+			"close",
+			"medium",
+			"far"
+		],
+		"orientation": [
+			"",
+			"facing camera",
+			"facing left",
+			"facing right",
+			"facing away",
+			"profile left",
+			"profile right",
+			"three-quarter left",
+			"three-quarter right"
+		],
+		"looking_at": [
+			"",
+			"at camera",
+			"away from camera",
+			"other"
+		],
+		"relative_to": ""
+	},
+	"appearance": {
+		"body_form": [
+			"",
+			"slim",
+			"athletic",
+			"toned",
+			"curvy",
+			"hourglass",
+			"pear-shaped",
+			"petite",
+			"tall",
+			"plump",
+			"voluptuous",
+			"chubby",
+			"other"
+		],
+		"body_covering": {
+			"type": [
+				"",
+				"fur",
+				"scales",
+				"feathers",
+				"skin",
+				"carapace",
+				"wool"
+			],
+			"primary_color": [
+				"",
+				"white",
+				"black",
+				"brown",
+				"tan",
+				"grey",
+				"orange",
+				"red",
+				"blue",
+				"green",
+				"purple",
+				"patterned",
+				"other"
+			],
+			"secondary_color": [
+				"",
+				"white",
+				"black",
+				"brown",
+				"tan",
+				"grey",
+				"orange",
+				"red",
+				"blue",
+				"green",
+				"purple",
+				"none",
+				"other"
+			],
+			"pattern": [
+				"",
+				"solid",
+				"striped",
+				"spotted",
+				"rosettes",
+				"patched",
+				"gradient",
+				"marbled"
+			]
+		},
+		"head_features": {
+			"muzzle": [
+				"",
+				"short",
+				"medium",
+				"long",
+				"flat",
+				"beak",
+				"snout"
+			],
+			"ear_shape": [
+				"",
+				"pointed",
+				"rounded",
+				"floppy",
+				"long",
+				"finned",
+				"hidden",
+				"human-like"
+			],
+			"ear_position": [
+				"",
+				"top of head",
+				"side of head"
+			],
+			"horns": {
+				"presence": ["", "yes", "no"],
+				"style": ["", "curved", "straight", "spiraled", "nubs"]
+			}
+		},
+		"eyes": {
+			"pupil_shape": [
+				"",
+				"round",
+				"slit",
+				"horizontal",
+				"heart",
+				"star"
+			],
+			"sclera_color": ["", "white", "black", "yellow", "red", "other"],
+			"iris_color": [
+				"",
+				"blue",
+				"brown",
+				"green",
+				"hazel",
+				"gray",
+				"amber",
+				"red",
+				"purple",
+				"other"
+			]
+		},
+		"head_hair": {
+			"presence": ["", "Yes", "No"],
+			"style": [
+				"",
+				"straight",
+				"wavy",
+				"curly",
+				"pixie cut",
+				"bob",
+				"shoulder-length",
+				"long",
+				"ponytail",
+				"braids",
+				"bun",
+				"mane",
+				"other"
+			],
+			"color": [
+				"",
+				"blonde",
+				"brunette",
+				"black",
+				"red",
+				"platinum",
+				"auburn",
+				"gray",
+				"dyed-unnatural",
+				"matches_fur",
+				"other"
+			]
+		},
+		"tail": {
+			"presence": ["", "yes", "no"],
+			"type": [
+				"",
+				"standard",
+				"bushy",
+				"thin",
+				"long",
+				"bob",
+				"prehensile",
+				"fluffy"
+			],
+			"state": [
+				"",
+				"wagging",
+				"still",
+				"curled",
+				"swishing"
+			]
+		},
+		"legs": {
+			"stance": [
+				"",
+				"plantigrade (human-like)",
+				"digitigrade (paw-like)",
+				"unguligrade (hooves)",
+				"taur"
+			],
+			"feet_type": ["", "paws", "hooves", "claws", "human-like", "talons"]
+		}
+	},
+	"anatomy": {
+		"mons_pubis": {
+			"size": ["", "small", "medium", "large"],
+			"shape": ["", "flat", "rounded", "prominent", "puffy"],
+			"fur": {
+				"presence": ["", "yes", "no"],
+				"density": ["", "sparse", "moderate", "dense"],
+				"style": ["", "natural", "trimmed", "shaved"]
+			},
+			"scales": {
+				"presence": ["", "yes", "no"],
+				"density": ["", "sparse", "moderate", "dense"],
+				"style": ["", "soft", "hard"]
+			}
+		},
+		"labia_majora": {
+			"size": ["", "small", "medium", "large"],
+			"thickness": ["", "thin", "average", "thick"],
+			"symmetry": ["", "symmetric", "slightly asymmetric", "asymmetric"],
+			"shape": ["", "slit", "rounded", "full", "camel-toe"],
+			"coloration": ["", "matches skin/fur", "pink", "black", "dark"]
+		},
+		"labia_minora": {
+			"visibility": ["", "hidden", "partially visible", "visible"],
+			"size": ["", "small", "medium", "large"],
+			"protrusion": ["", "none", "slight", "moderate", "prominent"],
+			"texture": ["", "smooth", "soft", "wrinkled"]
+		},
+		"clitoris": {
+			"visibility": ["", "hidden", "partially visible", "visible"],
+			"size": ["", "small", "medium", "large"],
+			"hood": {
+				"coverage": ["", "fully covered", "partially covered", "exposed"]
+			}
+		},
+		"breasts": {
+			"presence": ["", "yes", "no", "multiple pairs"],
+			"size": ["", "flat", "small", "medium", "large", "huge"],
+			"shape": ["", "round", "teardrop", "perky", "saggy"],
+			"nipples": {
+				"color": ["", "pink", "brown", "black", "matches fur"],
+				"shape": ["", "flat", "puffy", "elongated"]
+			}
+		}
+	}
+}

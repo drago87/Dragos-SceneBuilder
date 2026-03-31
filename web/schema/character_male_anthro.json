@@ -1,0 +1,304 @@
+{
+	"_meta": {
+		"display_name": "Character"
+	},
+	"_static": {
+		"gender": "Male",
+		"character_type": "Anthromorphic"
+	},
+	"name": "",
+	"age": "",
+	"from": "",
+	"species": {
+		"type": [
+			"",
+			"canine",
+			"feline",
+			"vulpine",
+			"lapine",
+			"rodent",
+			"ungulate",
+			"mustelid",
+			"avian",
+			"reptile",
+			"amphibian",
+			"dragon",
+			"marsupial",
+			"hybrid",
+			"other"
+		],
+		"hybrid_note": ""
+	},
+	"placement": {
+		"frame_position": [
+			"center",
+			"left",
+			"right",
+			"top",
+			"bottom",
+			"top-left",
+			"top-right",
+			"bottom-left",
+			"bottom-right"
+		],
+		"proximity_to_camera": [
+			"",
+			"foreground",
+			"midground",
+			"background",
+			"close",
+			"medium",
+			"far"
+		],
+		"orientation": [
+			"",
+			"facing camera",
+			"facing left",
+			"facing right",
+			"facing away",
+			"profile left",
+			"profile right",
+			"three-quarter left",
+			"three-quarter right"
+		],
+		"looking_at": [
+			"",
+			"at camera",
+			"away from camera",
+			"other"
+		],
+		"relative_to": ""
+	},
+	"appearance": {
+		"body_build": [
+			"",
+			"slim",
+			"average",
+			"athletic",
+			"muscular",
+			"bodybuilder",
+			"stocky",
+			"lean",
+			"lanky",
+			"chubby",
+			"other"
+		],
+		"body_covering": {
+			"type": [
+				"",
+				"fur",
+				"scales",
+				"feathers",
+				"skin",
+				"carapace",
+				"wool"
+			],
+			"primary_color": [
+				"",
+				"white",
+				"black",
+				"brown",
+				"tan",
+				"grey",
+				"orange",
+				"red",
+				"blue",
+				"green",
+				"purple",
+				"patterned",
+				"other"
+			],
+			"secondary_color": [
+				"",
+				"white",
+				"black",
+				"brown",
+				"tan",
+				"grey",
+				"orange",
+				"red",
+				"blue",
+				"green",
+				"purple",
+				"none",
+				"other"
+			],
+			"pattern": [
+				"",
+				"solid",
+				"striped",
+				"spotted",
+				"rosettes",
+				"patched",
+				"gradient",
+				"marbled"
+			]
+		},
+		"head_features": {
+			"muzzle": [
+				"",
+				"short",
+				"medium",
+				"long",
+				"flat",
+				"beak",
+				"snout"
+			],
+			"ear_shape": [
+				"",
+				"pointed",
+				"rounded",
+				"floppy",
+				"long",
+				"finned",
+				"hidden",
+				"human-like"
+			],
+			"ear_position": [
+				"",
+				"top of head",
+				"side of head"
+			],
+			"horns": {
+				"presence": ["", "yes", "no"],
+				"style": ["", "curved", "straight", "spiraled", "nubs", "antlers"]
+			}
+		},
+		"eyes": {
+			"pupil_shape": [
+				"",
+				"round",
+				"slit",
+				"horizontal",
+				"heart",
+				"star"
+			],
+			"sclera_color": ["", "white", "black", "yellow", "red", "other"],
+			"iris_color": [
+				"",
+				"blue",
+				"brown",
+				"green",
+				"hazel",
+				"gray",
+				"amber",
+				"red",
+				"purple",
+				"other"
+			]
+		},
+		"head_hair": {
+			"presence": ["", "Yes", "No"],
+			"style": [
+				"",
+				"short-cropped",
+				"buzz cut",
+				"faded",
+				"slicked-back",
+				"undercut",
+				"messy",
+				"long",
+				"man-bun",
+				"bald",
+				"mane",
+				"other"
+			],
+			"color": [
+				"",
+				"blonde",
+				"brown",
+				"black",
+				"red",
+				"gray",
+				"salt and pepper",
+				"matches_fur",
+				"other"
+			]
+		},
+		"facial_hair": {
+			"presence": ["", "Yes", "No"],
+			"style": [
+				"",
+				"clean-shaven",
+				"stubble",
+				"goatee",
+				"full beard",
+				"mustache",
+				"mutton chops",
+				"other"
+			]
+		},
+		"tail": {
+			"presence": ["", "yes", "no"],
+			"type": [
+				"",
+				"standard",
+				"bushy",
+				"thin",
+				"long",
+				"bob",
+				"prehensile",
+				"fluffy"
+			],
+			"state": [
+				"",
+				"wagging",
+				"still",
+				"curled",
+				"swishing"
+			]
+		},
+		"legs": {
+			"stance": [
+				"",
+				"plantigrade (human-like)",
+				"digitigrade (paw-like)",
+				"unguligrade (hooves)",
+				"taur"
+			],
+			"feet_type": ["", "paws", "hooves", "claws", "human-like", "talons"]
+		}
+	},
+	"anatomy": {
+		"genitals": {
+			"configuration": [
+				"",
+				"humanoid",
+				"canine (knot)",
+				"equine (flare)",
+				"feline (barbs)",
+				"reptilian (slit/hemi)",
+				"tentacle"
+			],
+			"size": [
+				"",
+				"small",
+				"average",
+				"large",
+				"huge"
+			],
+			"sheath": {
+				"presence": ["", "yes", "no"],
+				"type": ["", "fur", "skin", "scales"]
+			},
+			"knot": {
+				"presence": ["", "yes", "no"],
+				"size": ["", "small", "medium", "large"]
+			},
+			"median_ring": {
+				"presence": ["", "yes", "no"],
+				"size": ["", "small", "medium", "large"]
+			},
+			"state": ["", "flaccid", "semi-erect", "fully-erect", "extended"],
+			"pubic_fur": {
+				"presence": ["", "yes", "no"],
+				"density": ["", "sparse", "moderate", "dense"],
+				"style": ["", "natural", "trimmed", "shaved"]
+			}
+		},
+		"physique_details": {
+			"definition": ["", "soft", "toned", "ripped", "bulky"],
+			"shoulder_width": ["", "narrow", "average", "broad"]
+		}
+	}
+}

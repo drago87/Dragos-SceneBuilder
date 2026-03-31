@@ -1,11 +1,13 @@
 {
 	"_meta": {
-		"display_name": "Character",
-		"gender": "Female"
+		"display_name": "Character"
 	},
-	"name": "Eiko Carol",
+	"_static": {
+		"gender": "Female",
+		"name": "Eiko Carol",
+		"from": "Final Fantasy IX (FF9)"
+	},
 	"age": "6",
-	"from": "Final Fantasy IX (FF9)",
 	"placement": {
 		"frame_position": [
 			"center",
@@ -37,6 +39,12 @@
 			"profile right",
 			"three-quarter left",
 			"three-quarter right"
+		],
+		"looking_at": [
+			"",
+			"at camera",
+			"away from camera",
+			"other"
 		],
 		"relative_to": ""
 	},

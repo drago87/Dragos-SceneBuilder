@@ -1,10 +1,13 @@
 {
 	"_meta": {
-		"display_name": "Character",
+		"display_name": "Character"
+	},
+	"_static": {
 		"gender": "Female"
 	},
 	"name":"",
 	"age":"",
+	"from":"",
 	"placement": {
 		"frame_position": [
 			"center",
@@ -36,6 +39,12 @@
 			"profile right",
 			"three-quarter left",
 			"three-quarter right"
+		],
+		"looking_at": [
+			"",
+			"at camera",
+			"away from camera",
+			"other"
 		],
 		"relative_to":  ""
 	},
