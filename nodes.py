@@ -11,342 +11,360 @@ PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "web", "prompts")
 
 def load_prompt_files():
 
-    files = []
+	files = []
 
-    for f in os.listdir(PROMPTS_DIR):
-        if f.endswith(".txt"):
-            files.append(os.path.splitext(f)[0])
+	for f in os.listdir(PROMPTS_DIR):
+		if f.endswith(".txt"):
+			files.append(os.path.splitext(f)[0])
 
-    return sorted(files)
+	return sorted(files)
 
 
 def parse_prompt_file(content: str):
-    """
-    Parses a prompt file and returns (info, prompt)
-    
-    Supported formats:
+	"""
+	Parses a prompt file and returns (info, prompt)
+	
+	Supported formats:
 
-    Format1:
-        <info>...</info>
-        <prompt>...</prompt>
+	Format1:
+		<info>...</info>
+		<prompt>...</prompt>
 
-    Format2:
-        <info>...</info>
-        raw text
+	Format2:
+		<info>...</info>
+		raw text
 
-    Format3:
-        <prompt>...</prompt>
+	Format3:
+		<prompt>...</prompt>
 
-    Format4:
-        raw text
-    """
+	Format4:
+		raw text
+	"""
 
-    info = ""
-    prompt = content.strip()
+	info = ""
+	prompt = content.strip()
 
-    # Extract <info> block if present
-    info_match = re.search(r"<info>([\s\S]*?)</info>", content, re.IGNORECASE)
-    if info_match:
-        info = info_match.group(1).strip()
+	# Extract <info> block if present
+	info_match = re.search(r"<info>([\s\S]*?)</info>", content, re.IGNORECASE)
+	if info_match:
+		info = info_match.group(1).strip()
 
-    # Extract <prompt> block if present
-    prompt_match = re.search(r"<prompt>([\s\S]*?)</prompt>", content, re.IGNORECASE)
-    if prompt_match:
-        prompt = prompt_match.group(1).strip()
-    elif info_match:
-        # remove info block if present
-        prompt = content.replace(info_match.group(0), "").strip()
-    else:
-        # fallback: use entire content
-        prompt = content.strip()
+	# Extract <prompt> block if present
+	prompt_match = re.search(r"<prompt>([\s\S]*?)</prompt>", content, re.IGNORECASE)
+	if prompt_match:
+		prompt = prompt_match.group(1).strip()
+	elif info_match:
+		# remove info block if present
+		prompt = content.replace(info_match.group(0), "").strip()
+	else:
+		# fallback: use entire content
+		prompt = content.strip()
 
-    return info, prompt
+	return info, prompt
 
 
 class DragosPromptLoaderNode:
 
-    CATEGORY = "DragosScene"
-    RETURN_TYPES = ("STRING",)
-    FUNCTION = "load_prompt"
+	CATEGORY = "DragosScene"
+	RETURN_TYPES = ("STRING",)
+	FUNCTION = "load_prompt"
 
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "prompt": (load_prompt_files(),),
-            },
-            "optional": {
-                "info_text": ("STRING", {"multiline": True, "default": ""}),
-                "prompt_text": ("STRING", {"multiline": True, "default": ""}),
-            }
-        }
+	@classmethod
+	def INPUT_TYPES(cls):
+		return {
+			"required": {
+				"prompt": (load_prompt_files(),),
+			},
+			"optional": {
+				"info_text": ("STRING", {"multiline": True, "default": ""}),
+				"prompt_text": ("STRING", {"multiline": True, "default": ""}),
+			}
+		}
 
-    def load_prompt(self, prompt, info_text="", prompt_text=""):
-        path = os.path.join(PROMPTS_DIR, prompt + ".txt")
+	def load_prompt(self, prompt, info_text="", prompt_text=""):
+		path = os.path.join(PROMPTS_DIR, prompt + ".txt")
 
-        content = ""
-        if os.path.exists(path):
-            with open(path, "r", encoding="utf-8") as f:
-                content = f.read()
+		content = ""
+		if os.path.exists(path):
+			with open(path, "r", encoding="utf-8") as f:
+				content = f.read()
 
-        info, parsed_prompt = parse_prompt_file(content)
+		info, parsed_prompt = parse_prompt_file(content)
 
-        # prioritize edited textbox
-        final_prompt = prompt_text.strip() if prompt_text.strip() else parsed_prompt
+		# prioritize edited textbox
+		final_prompt = prompt_text.strip() if prompt_text.strip() else parsed_prompt
 
-        return (final_prompt,)
+		return (final_prompt,)
 
 
 def load_schema_categories():
-    categories = []
-    
-    if not os.path.exists(SCHEMA_DIR):
-        return ["character"]
+	categories = []
+	
+	if not os.path.exists(SCHEMA_DIR):
+		return ["character"]
 
-    # Walk through the schema directory and all subdirectories
-    for root, dirs, files in os.walk(SCHEMA_DIR):
-        for file in files:
-            if file.endswith(".json"):
-                # Get the full path of the file
-                full_path = os.path.join(root, file)
-                
-                # Get the path relative to the SCHEMA_DIR
-                rel_path = os.path.relpath(full_path, SCHEMA_DIR)
-                
-                # Remove the .json extension
-                name = os.path.splitext(rel_path)[0]
-                
-                # Normalize path separators to forward slashes for web URLs
-                # (Windows uses backslashes, web needs forward slashes)
-                name = name.replace("\\", "/")
-                
-                categories.append(name)
+	# Walk through the schema directory and all subdirectories
+	for root, dirs, files in os.walk(SCHEMA_DIR):
+		for file in files:
+			if file.endswith(".json"):
+				# Get the full path of the file
+				full_path = os.path.join(root, file)
+				
+				# Get the path relative to the SCHEMA_DIR
+				rel_path = os.path.relpath(full_path, SCHEMA_DIR)
+				
+				# Remove the .json extension
+				name = os.path.splitext(rel_path)[0]
+				
+				# Normalize path separators to forward slashes for web URLs
+				# (Windows uses backslashes, web needs forward slashes)
+				name = name.replace("\\", "/")
+				
+				categories.append(name)
 
-    return sorted(categories)
+	return sorted(categories)
 
 
 def is_valid_prompt_var(v):
 
-    if not isinstance(v, dict):
-        return False
+	if not isinstance(v, dict):
+		return False
 
-    if "name" not in v or "value" not in v:
-        return False
+	if "name" not in v or "value" not in v:
+		return False
 
-    if v["value"] is None:
-        return False
+	if v["value"] is None:
+		return False
 
-    return True
+	return True
 
 
 class DragosVariableNode:
 
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "var_name": ("STRING", {"default": "subject"}),
-                "text": ("STRING", {"multiline": True, "default": ""}),
-            }
-        }
+	@classmethod
+	def INPUT_TYPES(cls):
+		return {
+			"required": {
+				"var_name": ("STRING", {"default": "subject"}),
+				"text": ("STRING", {"multiline": True, "default": ""}),
+			}
+		}
 
-    RETURN_TYPES = (PROMPT_VAR_TYPE,)
-    FUNCTION = "get_text"
-    CATEGORY = "DragosScene"
+	RETURN_TYPES = (PROMPT_VAR_TYPE,)
+	FUNCTION = "get_text"
+	CATEGORY = "DragosScene"
 
-    def get_text(self, var_name, text):
+	def get_text(self, var_name, text):
 
-        if var_name is None or var_name == "":
-            return (None,)
+		if var_name is None or var_name == "":
+			return (None,)
 
-        return ({
-            "name": var_name,
-            "value": text
-        },)
+		return ({
+			"name": var_name,
+			"value": text
+		},)
 
 
 class DragosObjectNode:
 
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "obj_name": ("STRING", {"default": "object"}),
-            },
-            "optional": {
-                "input_1": (PROMPT_VAR_TYPE, {"forceInput": True}),
-            }
-        }
+	@classmethod
+	def INPUT_TYPES(cls):
+		return {
+			"required": {
+				"obj_name": ("STRING", {"default": "object"}),
+			},
+			"optional": {
+				"input_1": (PROMPT_VAR_TYPE, {"forceInput": True}),
+			}
+		}
 
-    RETURN_TYPES = (PROMPT_VAR_TYPE,)
-    FUNCTION = "build_object"
-    CATEGORY = "DragosScene"
+	RETURN_TYPES = (PROMPT_VAR_TYPE,)
+	FUNCTION = "build_object"
+	CATEGORY = "DragosScene"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, **kwargs):
-        return True
+	@classmethod
+	def VALIDATE_INPUTS(cls, **kwargs):
+		return True
 
-    def build_object(self, obj_name, **kwargs):
+	def build_object(self, obj_name, **kwargs):
 
-        if obj_name is None or obj_name == "":
-            return (None,)
+		if obj_name is None or obj_name == "":
+			return (None,)
 
-        combined = {}
+		combined = {}
 
-        for v in kwargs.values():
+		for v in kwargs.values():
 
-            if not is_valid_prompt_var(v):
-                continue
+			if not is_valid_prompt_var(v):
+				continue
 
-            combined[v["name"]] = v["value"]
+			combined[v["name"]] = v["value"]
 
-        if not combined:
-            return (None,)
+		if not combined:
+			return (None,)
 
-        return ({
-            "name": obj_name,
-            "value": combined
-        },)
+		return ({
+			"name": obj_name,
+			"value": combined
+		},)
 
 
 def deep_merge(base_dict, merge_dict):
-    """
-    Deep merge merge_dict into base_dict.
-    - If a key exists in both and both values are dicts, merge recursively
-    - Otherwise, merge_dict's value overwrites base_dict's value
-    """
-    result = dict(base_dict)  # shallow copy
-    
-    for key, value in merge_dict.items():
-        if (
-            key in result
-            and isinstance(result[key], dict)
-            and isinstance(value, dict)
-        ):
-            result[key] = deep_merge(result[key], value)
-        else:
-            result[key] = value
-    
-    return result
+	"""
+	Deep merge merge_dict into base_dict.
+	- If a key exists in both and both values are dicts, merge recursively
+	- Otherwise, merge_dict's value overwrites base_dict's value
+	"""
+	result = dict(base_dict)  # shallow copy
+	
+	for key, value in merge_dict.items():
+		if (
+			key in result
+			and isinstance(result[key], dict)
+			and isinstance(value, dict)
+		):
+			result[key] = deep_merge(result[key], value)
+		else:
+			result[key] = value
+	
+	return result
 
 
 class DragosSceneCompiler:
 
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {},
-            "optional": {
-                "input_1": ("PROMPT_VAR", {"forceInput": True}),
-            },
-            "hidden": {
-                "output_json_string": ("STRING", {"multiline": True}),
-            }
-        }
+	@classmethod
+	def INPUT_TYPES(cls):
+		return {
+			"required": {},
+			"optional": {
+				"input_1": ("PROMPT_VAR", {"forceInput": True}),
+			},
+			"hidden": {
+				"output_json_string": ("STRING", {"multiline": True}),
+			}
+		}
 
-    RETURN_TYPES = ("STRING",)
-    OUTPUT_NODE = True
-    FUNCTION = "compile_json"
-    CATEGORY = "DragosScene"
+	RETURN_TYPES = ("STRING",)
+	OUTPUT_NODE = True
+	FUNCTION = "compile_json"
+	CATEGORY = "DragosScene"
 
-    @staticmethod
-    def _unwrap_prompt_var(v):
-        while isinstance(v, tuple) and len(v) == 1:
-            v = v[0]
-        return v
+	@staticmethod
+	def _unwrap_prompt_var(v):
+		while isinstance(v, tuple) and len(v) == 1:
+			v = v[0]
+		return v
 
-    @staticmethod
-    def _compact_for_llm(text: str) -> str:
-        """
-        Replace tabs and newlines with spaces and collapse multiple spaces.
-        This reduces token count and improves semantic locality.
-        """
-        if not text:
-            return ""
+	@staticmethod
+	def _compact_for_llm(text: str) -> str:
+		"""
+		Replace tabs and newlines with spaces and collapse multiple spaces.
+		This reduces token count and improves semantic locality.
+		"""
+		if not text:
+			return ""
 
-        # Replace newline and tab with space
-        text = re.sub(r"[\n\t]+", " ", text)
+		# Replace newline and tab with space
+		text = re.sub(r"[\n\t]+", " ", text)
 
-        # Collapse multiple spaces into one
-        text = re.sub(r" {2,}", " ", text)
+		# Collapse multiple spaces into one
+		text = re.sub(r" {2,}", " ", text)
 
-        return text.strip()
+		return text.strip()
 
-    def compile_json(self, **kwargs):
+	def compile_json(self, **kwargs):
 
-        hidden_json = kwargs.get("output_json_string")
+		hidden_json = kwargs.get("output_json_string")
 
-        if hidden_json:
-            compact = self._compact_for_llm(hidden_json)
-            return (compact,)
+		if hidden_json:
+			compact = self._compact_for_llm(hidden_json)
+			return (compact,)
 
-        scene = {}
+		scene = {}
 
-        for key, v in kwargs.items():
-            unwrapped = self._unwrap_prompt_var(v)
-            if isinstance(unwrapped, dict) and "name" in unwrapped and "value" in unwrapped:
-                entry_name = unwrapped["name"]
-                entry_value = unwrapped["value"]
-                
-                # Check if key already exists and merge if both are dicts
-                if entry_name in scene and isinstance(scene[entry_name], dict) and isinstance(entry_value, dict):
-                    scene[entry_name] = deep_merge(scene[entry_name], entry_value)
-                else:
-                    scene[entry_name] = entry_value
+		for key, v in kwargs.items():
+			unwrapped = self._unwrap_prompt_var(v)
+			if isinstance(unwrapped, dict) and "name" in unwrapped and "value" in unwrapped:
+				entry_name = unwrapped["name"]
+				entry_value = unwrapped["value"]
+				
+				# Check if key already exists and merge if both are dicts
+				if entry_name in scene and isinstance(scene[entry_name], dict) and isinstance(entry_value, dict):
+					scene[entry_name] = deep_merge(scene[entry_name], entry_value)
+				else:
+					scene[entry_name] = entry_value
 
-        json_out = json.dumps(scene, indent="\t", ensure_ascii=False)
+		json_out = json.dumps(scene, indent="\t", ensure_ascii=False)
 
-        compact = self._compact_for_llm(json_out)
+		compact = self._compact_for_llm(json_out)
 
-        return (compact,)
+		return (compact,)
 
 class DragosStructuredBuilderNode:
 
-    CATEGORY = "DragosScene"
-    RETURN_TYPES = (PROMPT_VAR_TYPE,)
-    FUNCTION = "build"
+	CATEGORY = "DragosScene"
+	RETURN_TYPES = (PROMPT_VAR_TYPE,)
+	FUNCTION = "build"
 
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "category": (load_schema_categories(),),
-            },
-            "optional": {
-                "input_1": (PROMPT_VAR_TYPE, {"forceInput": True}),
-            },
-            "hidden": {
-                "json_data": ("STRING",),
-            }
-        }
+	@classmethod
+	def INPUT_TYPES(cls):
+		return {
+			"required": {
+				"category": (load_schema_categories(),),
+			},
+			"optional": {
+				"input_1": (PROMPT_VAR_TYPE, {"forceInput": True}),
+			},
+			"hidden": {
+				"json_data": ("STRING",),
+			}
+		}
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, **kwargs):
-        return True
+	@classmethod
+	def VALIDATE_INPUTS(cls, **kwargs):
+		return True
 
-    def build(self, category, json_data, **kwargs):
-    
-        try:
-            parsed = json.loads(json_data) if json_data else {}
-        except Exception:
-            parsed = {}
-    
-        meta = parsed.get("_meta", {})
-        base_data = parsed.get("data", {})
-        
-        # Collect all input values from kwargs (dynamic inputs)
-        input_values = {}
-        for v in kwargs.values():
-            if not is_valid_prompt_var(v):
-                continue
-            input_values[v["name"]] = v["value"]
-        
-        # Merge input values with base data
-        # Input values override base data
-        merged_data = deep_merge(base_data, input_values)
-    
-        return ({
-            "name": meta.get("category", category),
-            "value": merged_data,
-            "_meta": meta
-        },)
+	def build(self, category, json_data="", **kwargs):
+	
+		try:
+			parsed = json.loads(json_data) if json_data else {}
+		except Exception:
+			parsed = {}
+	
+		meta = parsed.get("_meta", {})
+		base_data = parsed.get("data", {})
+		
+		# Get this node's category (e.g., "character") to validate extensions
+		my_category = meta.get("category", "")
+		
+		# Collect all input values from kwargs (dynamic inputs)
+		input_values = {}
+		extensions_to_merge = []
+		
+		for v in kwargs.values():
+			if not is_valid_prompt_var(v):
+				continue
+				
+			# Check if this input is an extension schema
+			v_meta = v.get("_meta", {})
+			if v_meta and v_meta.get("extension"):
+				# ONLY merge if the extension's target matches this node's category!
+				if v_meta.get("extension") == my_category:
+					extensions_to_merge.append(v["value"])
+			else:
+				# Normal variable/object input
+				input_values[v["name"]] = v["value"]
+		
+		# Merge standard input values with base data
+		merged_data = deep_merge(base_data, input_values)
+		
+		# Deep merge extensions directly into the root (e.g., merging "top": "shirt" into character)
+		for ext_data in extensions_to_merge:
+			if isinstance(ext_data, dict):
+				merged_data = deep_merge(merged_data, ext_data)
+	
+		return ({
+			"name": meta.get("category", category),
+			"value": merged_data,
+			"_meta": meta
+		},)

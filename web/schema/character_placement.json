@@ -1,0 +1,65 @@
+{
+	"_meta": {
+		"extension": "character"
+	},
+	"character_placement": {
+		"frame_position": [
+			"center",
+			"left",
+			"right",
+			"top",
+			"bottom",
+			"top-left",
+			"top-right",
+			"bottom-left",
+			"bottom-right"
+		],
+		"proximity_to_camera": [
+			"",
+			"foreground",
+			"midground",
+			"background",
+			"close",
+			"medium",
+			"far"
+		],
+		"body_orientation": [
+			"",
+			"facing camera",
+			"facing left",
+			"facing right",
+			"facing away",
+			"profile left",
+			"profile right",
+			"three-quarter left",
+			"three-quarter right",
+			"reclining",
+			"lying down"
+		],
+		"head_orientation": [
+			"",
+			"facing camera",
+			"facing left",
+			"facing right",
+			"facing up",
+			"facing down",
+			"profile left",
+			"profile right",
+			"tilted left",
+			"tilted right",
+			"turned back"
+		],
+		"looking_at": [
+			"",
+			"at camera",
+			"away from camera",
+			"up",
+			"down",
+			"left",
+			"right",
+			"closed eyes",
+			"other"
+		],
+		"relative_to": ""
+	}
+}

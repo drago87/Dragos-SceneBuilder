@@ -1,0 +1,161 @@
+{
+	"_meta": {
+		"display_name": "Character"
+	},
+	"_static": {
+		"gender": "Female",
+		"character_type": "Animal"
+	},
+	"name": "",
+	"age": "",
+	"from": "",
+	"species": [
+		"",
+		"Wolf",
+		"Fox",
+		"Feline",
+		"Canine",
+		"Equine",
+		"Bovine",
+		"Ursine",
+		"Reptile",
+		"Avian",
+		"Dragon",
+		"Lamia",
+		"Naga",
+		"Griffin",
+		"Unicorn",
+		"Wyvern",
+		"Kirin",
+		"other"
+	],
+	"appearance": {
+		"body_build": [
+			"",
+			"lean",
+			"athletic",
+			"toned",
+			"stocky",
+			"heavy",
+			"slender",
+			"lithe",
+			"other"
+		],
+		"coat_type": [
+			"",
+			"fur",
+			"scales",
+			"feathers",
+			"skin",
+			"chitin",
+			"other"
+		],
+		"color_primary": [
+			"",
+			"black",
+			"white",
+			"gray",
+			"brown",
+			"tan",
+			"red",
+			"golden",
+			"green",
+			"blue",
+			"other"
+		],
+		"color_secondary": [
+			"",
+			"black",
+			"white",
+			"gray",
+			"brown",
+			"tan",
+			"red",
+			"golden",
+			"green",
+			"blue",
+			"none",
+			"other"
+		],
+		"pattern": [
+			"",
+			"solid",
+			"striped",
+			"spotted",
+			"rosettes",
+			"bi-color",
+			"tri-color",
+			"brindle",
+			"other"
+		],
+		"head_features": {
+			"ears": [
+				"",
+				"pointed",
+				"rounded",
+				"floppy",
+				"horned",
+				"finned",
+				"none",
+				"other"
+			],
+			"horns_antlers": [
+				"",
+				"none",
+				"antlers",
+				"ram horns",
+				"straight horns",
+				"curved horns",
+				"other"
+			]
+		},
+		"special_traits": [
+			"",
+			"wings",
+			"multiple tails",
+			"mane",
+			"spikes",
+			"frills",
+			"bioluminescence",
+			"other"
+		]
+	},
+	"anatomy": {
+		"genitals": {
+			"type": [
+				"",
+				"standard",
+				"cloaca",
+				"other"
+			],
+			"size": [
+				"",
+				"small",
+				"average",
+				"large",
+				"other"
+			],
+			"shape": [
+				"",
+				"slit",
+				"rounded",
+				"other"
+			]
+		},
+		"secondary_sex_characteristics": {
+			"teats_presence": ["", "yes", "no"],
+			"teats_count": ["", "2", "4", "6", "8", "other"],
+			"plumpness": [
+				"",
+				"flat",
+				"moderate",
+				"full",
+				"other"
+			]
+		},
+		"physique_details": {
+			"paws_claws": ["", "paws", "claws", "hooves", "talons", "other"],
+			"tail": ["", "long", "short", "fluffy", "hairless", "none", "other"]
+		}
+	}
+}

@@ -4,704 +4,744 @@ import { ComfyWidgets } from "../../scripts/widgets.js";
 
 function isNodeActive(node)
 {
-        if (!node) return false;
+	if (!node) return false;
 
-        if (node.mode === 2) return false;
-        if (node.mode === 4) return false;
+	if (node.mode === 2) return false;
+	if (node.mode === 4) return false;
 
-        return true;
+	return true;
 }
 
 function getWidgetValue(node, names)
 {
-        if (!node.widgets) return null;
+	if (!node.widgets) return null;
 
-        for (const name of names)
-        {
-                const w = node.widgets.find(w => w.name === name);
-                if (w) return w.value;
-        }
+	for (const name of names)
+	{
+		const w = node.widgets.find(w => w.name === name);
+		if (w) return w.value;
+	}
 
-        return null;
+	return null;
 }
 
 function deepMergeObjects(base, override)
 {
-        const result = { ...base };
+	const result = { ...base };
 
-        for (const key in override)
-        {
-                if (
-                        key in result &&
-                        typeof result[key] === "object" &&
-                        result[key] !== null &&
-                        !Array.isArray(result[key]) &&
-                        typeof override[key] === "object" &&
-                        override[key] !== null &&
-                        !Array.isArray(override[key])
-                )
-                {
-                        result[key] = deepMergeObjects(result[key], override[key]);
-                }
-                else
-                {
-                        result[key] = override[key];
-                }
-        }
+	for (const key in override)
+	{
+		if (
+			key in result &&
+			typeof result[key] === "object" &&
+			result[key] !== null &&
+			!Array.isArray(result[key]) &&
+			typeof override[key] === "object" &&
+			override[key] !== null &&
+			!Array.isArray(override[key])
+		)
+		{
+			result[key] = deepMergeObjects(result[key], override[key]);
+		}
+		else
+		{
+			result[key] = override[key];
+		}
+	}
 
-        return result;
+	return result;
 }
 
 function getValueRecursive(node, graph)
 {
-        if (!node) return undefined;
-        if (!isNodeActive(node)) return undefined;
+	if (!node) return undefined;
+	if (!isNodeActive(node)) return undefined;
 
-        if (node.comfyClass === "DragosVariable")
-                return getWidgetValue(node, ["text"]) ?? "";
+	if (node.comfyClass === "DragosVariable")
+		return getWidgetValue(node, ["text"]) ?? "";
 
-        if (node.comfyClass === "DragosStructuredBuilder")
-        {
-                // First, build the base result from widgets (schema data)
-                const result = {};
+	if (node.comfyClass === "DragosStructuredBuilder")
+	{
+		// First, build the base result from widgets (schema data)
+		const result = {};
 
-                for (const widget of node.widgets || [])
-                {
-                        if (!widget.dragosPath) continue;
-                        if (widget.hidden) continue;
-                        if (widget.value === "" || widget.value == null) continue;
+		// Get this node's category for extension validation
+		let myCategory = "";
+		const myJsonWidget = node.widgets?.find(w => w.name === "json_data");
+		if (myJsonWidget?.value) {
+			try {
+				const myParsed = JSON.parse(myJsonWidget.value);
+				myCategory = myParsed._meta?.category || "";
+			} catch(e) {}
+		}
 
-                        const parts = widget.dragosPath.split(".");
-                        let current = result;
+		for (const widget of node.widgets || [])
+		{
+			if (!widget.dragosPath) continue;
+			if (widget.hidden) continue;
+			if (widget.value === "" || widget.value == null) continue;
 
-                        for (let i = 0; i < parts.length - 1; i++)
-                        {
-                                const part = parts[i];
+			const parts = widget.dragosPath.split(".");
+			let current = result;
 
-                                if (!(part in current))
-                                        current[part] = {};
+			for (let i = 0; i < parts.length - 1; i++)
+			{
+				const part = parts[i];
 
-                                current = current[part];
-                        }
+				if (!(part in current))
+					current[part] = {};
 
-                        current[parts[parts.length - 1]] = widget.value;
-                }
+				current = current[part];
+			}
 
-                // Now merge any connected inputs (DragosVariable or DragosObject)
-                if (node.inputs)
-                {
-                        for (const input of node.inputs)
-                        {
-                                if (!input || input.link == null) continue;
-                                if (!input.name || !input.name.startsWith("input_")) continue;
+			current[parts[parts.length - 1]] = widget.value;
+		}
 
-                                const link = graph.links[input.link];
-                                if (!link) continue;
+		// Now merge any connected inputs
+		if (node.inputs)
+		{
+			for (const input of node.inputs)
+			{
+				if (!input || input.link == null) continue;
+				if (!input.name || !input.name.startsWith("input_")) continue;
 
-                                const origin = graph.getNodeById(link.origin_id);
-                                if (!origin || !isNodeActive(origin)) continue;
+				const link = graph.links[input.link];
+				if (!link) continue;
 
-                                // Get the name from the connected node
-                                const inputName = getWidgetValue(origin, ["var_name", "obj_name"]);
-                                const inputValue = getValueRecursive(origin, graph);
+				const origin = graph.getNodeById(link.origin_id);
+				if (!origin || !isNodeActive(origin)) continue;
 
-                                if (inputName && inputValue !== undefined)
-                                {
-                                        // If it's a simple value, add/override directly
-                                        // If it's an object, merge it
-                                        if (typeof inputValue === "object" && inputValue !== null)
-                                        {
-                                                result[inputName] = deepMergeObjects(result[inputName] || {}, inputValue);
-                                        }
-                                        else
-                                        {
-                                                result[inputName] = inputValue;
-                                        }
-                                }
-                        }
-                }
+				const inputValue = getValueRecursive(origin, graph);
+				if (inputValue === undefined) continue;
 
-                return result;
-        }
+				// Check if origin is a StructuredBuilder with an extension meta
+				let isExtension = false;
+				let extensionTarget = "";
 
-        if (node.comfyClass === "DragosObject")
-        {
-                const result = {};
+				if (origin.comfyClass === "DragosStructuredBuilder") {
+					const originJsonWidget = origin.widgets?.find(w => w.name === "json_data");
+					if (originJsonWidget?.value) {
+						try {
+							const parsedOrigin = JSON.parse(originJsonWidget.value);
+							if (parsedOrigin._meta?.extension) {
+								isExtension = true;
+								extensionTarget = parsedOrigin._meta.extension;
+							}
+						} catch (e) {}
+					}
+				}
 
-                for (const input of node.inputs || [])
-                {
-                        if (input.link == null) continue;
+				if (isExtension) {
+					// ONLY merge if the extension target matches THIS node's category
+					if (extensionTarget === myCategory) {
+						if (typeof inputValue === "object" && inputValue !== null) {
+							// Deep merge directly into root
+							for (const key in inputValue) {
+								if (
+									key in result &&
+									typeof result[key] === "object" &&
+									result[key] !== null &&
+									!Array.isArray(result[key]) &&
+									typeof inputValue[key] === "object" &&
+									inputValue[key] !== null &&
+									!Array.isArray(inputValue[key])
+								) {
+									result[key] = deepMergeObjects(result[key], inputValue[key]);
+								} else {
+									result[key] = inputValue[key];
+								}
+							}
+						}
+					}
+				} else {
+					// Standard DragosVariable / DragosObject behavior
+					const inputName = getWidgetValue(origin, ["var_name", "obj_name"]);
+					if (inputName) {
+						if (typeof inputValue === "object" && inputValue !== null)
+						{
+							result[inputName] = deepMergeObjects(result[inputName] || {}, inputValue);
+						}
+						else
+						{
+							result[inputName] = inputValue;
+						}
+					}
+				}
+			}
+		}
 
-                        const link = graph.links[input.link];
-                        if (!link) continue;
+		return result;
+	}
 
-                        const origin = graph.getNodeById(link.origin_id);
-                        if (!isNodeActive(origin)) continue;
+	if (node.comfyClass === "DragosObject")
+	{
+		const result = {};
 
-                        const key =
-                                getWidgetValue(origin, ["var_name", "obj_name"])
-                                ?? input.name;
+		for (const input of node.inputs || [])
+		{
+			if (input.link == null) continue;
 
-                        const value = getValueRecursive(origin, graph);
+			const link = graph.links[input.link];
+			if (!link) continue;
 
-                        if (value !== undefined)
-                                result[key] = value;
-                }
+			const origin = graph.getNodeById(link.origin_id);
+			if (!isNodeActive(origin)) continue;
 
-                return result;
-        }
+			const key =
+				getWidgetValue(origin, ["var_name", "obj_name"])
+				?? input.name;
 
-        return undefined;
+			const value = getValueRecursive(origin, graph);
+
+			if (value !== undefined)
+				result[key] = value;
+		}
+
+		return result;
+	}
+
+	return undefined;
 }
 
 
 function refreshNode(node, graph, previewWidget, syncPreviewHeight)
 {
-    if (!node || !graph || !node.inputs)
-        return;
+	if (!node || !graph || !node.inputs)
+		return;
 
 
-    ////////////////////////////////////////////////////////////
-    // STEP 1 — Collect ordered origin nodes (stable order)
-    ////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	// STEP 1 — Collect ordered origin nodes (stable order)
+	//////////////////////////////////////////////////////////
 
-    const orderedOrigins = [];
+	const orderedOrigins = [];
 
-    for (let i = 0; i < node.inputs.length; i++)
-    {
-        const input = node.inputs[i];
+	for (let i = 0; i < node.inputs.length; i++)
+	{
+		const input = node.inputs[i];
 
-        if (!input || input.link == null)
-            continue;
+		if (!input || input.link == null)
+			continue;
 
-        const link = graph.links[input.link];
-        if (!link)
-            continue;
+		const link = graph.links[input.link];
+		if (!link)
+			continue;
 
-        const origin = graph.getNodeById(link.origin_id);
+		const origin = graph.getNodeById(link.origin_id);
 
-        if (!origin)
-            continue;
+		if (!origin)
+			continue;
 
-        if (!isNodeActive(origin))
-            continue;
+		if (!isNodeActive(origin))
+			continue;
 
-        orderedOrigins.push(origin);
-    }
+		orderedOrigins.push(origin);
+	}
 
 
 
-    ////////////////////////////////////////////////////////////
-    // STEP 2 — Build intermediate structure
-    ////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	// STEP 2 — Build intermediate structure
+	//////////////////////////////////////////////////////////
 
-    const built = [];
+	const built = [];
 
-    for (let i = 0; i < orderedOrigins.length; i++)
-    {
-        const origin = orderedOrigins[i];
+	for (let i = 0; i < orderedOrigins.length; i++)
+	{
+		const origin = orderedOrigins[i];
 
-        const value =
-            getValueRecursive(origin, graph);
+		const value =
+			getValueRecursive(origin, graph);
 
-        if (
-            value == null ||
-            (typeof value === "object" &&
-             Object.keys(value).length === 0)
-        )
-            continue;
+		if (
+			value == null ||
+			(typeof value === "object" &&
+				Object.keys(value).length === 0)
+		)
+			continue;
 
 
-        let category = "";
-        let extension = "";
+		let category = "";
+		let extension = "";
 
 
-        // Read _meta from json_data widget ONCE
-        const jsonWidget =
-            origin.widgets?.find(
-                w => w.name === "json_data"
-            );
+		// Read _meta from json_data widget ONCE
+		const jsonWidget =
+			origin.widgets?.find(
+				w => w.name === "json_data"
+			);
 
-        if (jsonWidget?.value)
-        {
-            try
-            {
-                const parsed =
-                    JSON.parse(jsonWidget.value);
+		if (jsonWidget?.value)
+		{
+			try
+			{
+				const parsed =
+					JSON.parse(jsonWidget.value);
 
-                const meta = parsed?._meta;
+				const meta = parsed?._meta;
 
-                if (meta)
-                {
-                    category =
-                        String(
-                            meta.display_name ??
-                            meta.displayName ??
-                            meta.category ??
-                            ""
-                        ).toLowerCase();
+				if (meta)
+				{
+					category =
+						String(
+							meta.display_name ??
+							meta.displayName ??
+							meta.category ??
+							""
+						).toLowerCase();
 
-                    extension =
-                        String(
-                            meta.extension ?? ""
-                        ).toLowerCase();
-                }
-            }
-            catch {}
-        }
+					extension =
+						String(
+							meta.extension ?? ""
+						).toLowerCase();
+				}
+			}
+			catch {}
+		}
 
 
-        // Fallback category detection
-        if (!category)
-        {
-            category =
-                String(
-                    getWidgetValue(
-                        origin,
-                        ["category", "obj_name", "var_name"]
-                    ) || ""
-                ).toLowerCase();
-        }
+		// Fallback category detection
+		if (!category)
+		{
+			category =
+				String(
+					getWidgetValue(
+						origin,
+						["category", "obj_name", "var_name"]
+					) || ""
+				).toLowerCase();
+		}
 
 
-        built.push({
-            category,
-            extension,
-            value,
-            sceneKey: null
-        });
-    }
+		built.push({
+			category,
+			extension,
+			value,
+			sceneKey: null
+		});
+	}
 
 
 
-    ////////////////////////////////////////////////////////////
-    // STEP 3 — Merge into final scene
-    ////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	// STEP 3 — Merge into final scene
+	//////////////////////////////////////////////////////////
 
-    const scene = {};
+	const scene = {};
 
-    let characterCount = 0;
+	let characterCount = 0;
 
 
-    for (let i = 0; i < built.length; i++)
-    {
-        const entry = built[i];
+	for (let i = 0; i < built.length; i++)
+	{
+		const entry = built[i];
 
-        ////////////////////////////////////////////////////////
-        // TOP-LEVEL
-        ////////////////////////////////////////////////////////
-
-        if (!entry.extension)
-        {
-            if (entry.category === "character")
-            {
-                characterCount++;
+		//////////////////////////////////////////////////////
+		// TOP-LEVEL
+		//////////////////////////////////////////////////////
+
+		if (!entry.extension)
+		{
+			if (entry.category === "character")
+			{
+				characterCount++;
 
-                const key =
-                    `character_${characterCount}`;
+				const key =
+					`character_${characterCount}`;
 
-                // Check if key already exists and merge if both are objects
-                if (scene[key] && typeof scene[key] === "object" && typeof entry.value === "object")
-                {
-                        scene[key] = deepMergeObjects(scene[key], entry.value);
-                }
-                else
-                {
-                        scene[key] = entry.value;
-                }
+				// Check if key already exists and merge if both are objects
+				if (scene[key] && typeof scene[key] === "object" && typeof entry.value === "object")
+				{
+					scene[key] = deepMergeObjects(scene[key], entry.value);
+				}
+				else
+				{
+					scene[key] = entry.value;
+				}
 
-                entry.sceneKey = key;
-            }
-            else if (entry.category)
-            {
-                const key = entry.category;
+				entry.sceneKey = key;
+			}
+			else if (entry.category)
+			{
+				const key = entry.category;
 
-                // Check if key already exists and merge if both are objects
-                if (scene[key] && typeof scene[key] === "object" && typeof entry.value === "object")
-                {
-                        scene[key] = deepMergeObjects(scene[key], entry.value);
-                }
-                else
-                {
-                        scene[key] = entry.value;
-                }
+				// Check if key already exists and merge if both are objects
+				if (scene[key] && typeof scene[key] === "object" && typeof entry.value === "object")
+				{
+					scene[key] = deepMergeObjects(scene[key], entry.value);
+				}
+				else
+				{
+					scene[key] = entry.value;
+				}
 
-                entry.sceneKey = key;
-            }
+				entry.sceneKey = key;
+			}
 
-            continue;
-        }
+			continue;
+		}
 
 
-        ////////////////////////////////////////////////////////
-        // EXTENSION MERGE
-        ////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////
+		// EXTENSION MERGE
+		//////////////////////////////////////////////////////
 
-        const targetCategory =
-            entry.extension;
+		const targetCategory =
+			entry.extension;
 
-        for (let j = i - 1; j >= 0; j--)
-        {
-            const candidate = built[j];
+		for (let j = i - 1; j >= 0; j--)
+		{
+			const candidate = built[j];
 
-            if (
-                candidate.category !== targetCategory
-            )
-                continue;
+			if (
+				candidate.category !== targetCategory
+			)
+				continue;
 
-            const targetKey =
-                candidate.sceneKey;
+			const targetKey =
+				candidate.sceneKey;
 
-            if (!targetKey)
-                break;
+			if (!targetKey)
+				break;
 
-            if (!scene[targetKey])
-                scene[targetKey] = {};
+			if (!scene[targetKey])
+				scene[targetKey] = {};
 
-            // Use deep merge instead of Object.assign for nested objects
-            scene[targetKey] = deepMergeObjects(scene[targetKey], entry.value);
+			// Use deep merge instead of Object.assign for nested objects
+			scene[targetKey] = deepMergeObjects(scene[targetKey], entry.value);
 
-            break;
-        }
-    }
+			break;
+		}
+	}
 
 
 
-    ////////////////////////////////////////////////////////////
-    // STEP 4 — Remove empty objects (deep clean)
-    ////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	// STEP 4 — Remove empty objects (deep clean)
+	//////////////////////////////////////////////////////////
 
-    function removeEmpty(obj)
-    {
-        if (!obj || typeof obj !== "object")
-            return obj;
-
-        for (const key in obj)
-        {
-            const val =
-                removeEmpty(obj[key]);
-
-            if (
-                val == null ||
-                (typeof val === "object" &&
-                 Object.keys(val).length === 0)
-            )
-            {
-                delete obj[key];
-            }
-        }
-
-        return obj;
-    }
-
-    removeEmpty(scene);
-
-
-
-    ////////////////////////////////////////////////////////////
-    // STEP 5 — Convert to JSON
-    ////////////////////////////////////////////////////////////
-
-    const json =
-        JSON.stringify(scene, null, "\t");
-
-
-
-    ////////////////////////////////////////////////////////////
-    // STEP 6 — Update preview widget (only if changed)
-    ////////////////////////////////////////////////////////////
-
-    if (
-        previewWidget &&
-        previewWidget.value !== json
-    )
-    {
-        previewWidget.value = json;
-
-        if (syncPreviewHeight)
-            syncPreviewHeight();
-    }
-
-
-
-    ////////////////////////////////////////////////////////////
-    // STEP 7 — Hidden output widget
-    ////////////////////////////////////////////////////////////
-
-    let hiddenOutput =
-        node.widgets.find(
-            w => w.name === "output_json_string"
-        );
-
-    if (!hiddenOutput)
-    {
-        hiddenOutput =
-            node.addWidget(
-                "text",
-                "output_json_string",
-                "",
-                () => {}
-            );
-
-        hiddenOutput.hidden = true;
-        hiddenOutput.computeSize =
-            () => [0, -8];
-        hiddenOutput.draw =
-            () => {};
-    }
-
-    hiddenOutput.value = json;
-
-
-
-        ////////////////////////////////////////////////////////////
-        // STEP 8 — Dynamic inputs (CORRECT INDEX-SAFE VERSION)
-        ////////////////////////////////////////////////////////////
-        
-        const dynamicInputs = node.inputs
-                .map((slot, realIndex) => ({
-                        slot,
-                        realIndex,
-                        index: (
-                                slot &&
-                                slot.name &&
-                                slot.name.startsWith("input_")
-                        )
-                                ? parseInt(slot.name.substring(6)) || 0
-                                : -1
-                }))
-                .filter(x => x.index >= 0)
-                .sort((a, b) => a.index - b.index);
-        
-        
-        if (dynamicInputs.length === 0)
-                return;
-        
-        
-        let changed = false;
-        
-        
-        ////////////////////////////////////////////////////////////
-        // Add new slot if last is connected
-        ////////////////////////////////////////////////////////////
-        
-        const last = dynamicInputs[dynamicInputs.length - 1];
-        
-        if (last.slot.link != null)
-        {
-                node.addInput(
-                        `input_${last.index + 1}`,
-                        "PROMPT_VAR"
-                );
-        
-                changed = true;
-        }
-        
-        
-        ////////////////////////////////////////////////////////////
-        // Remove trailing empty slots SAFELY using REAL INDEX
-        ////////////////////////////////////////////////////////////
-        
-        while (dynamicInputs.length > 1)
-        {
-                const lastEntry =
-                        dynamicInputs[dynamicInputs.length - 1];
-        
-                const prevEntry =
-                        dynamicInputs[dynamicInputs.length - 2];
-        
-                if (
-                        lastEntry.slot.link == null &&
-                        prevEntry.slot.link == null
-                )
-                {
-                        // find CURRENT real index (important)
-                        const currentRealIndex =
-                                node.inputs.findIndex(
-                                        s => s === lastEntry.slot
-                                );
-        
-                        if (currentRealIndex !== -1)
-                        {
-                                node.removeInput(currentRealIndex);
-        
-                                dynamicInputs.pop();
-        
-                                changed = true;
-        
-                                continue;
-                        }
-                }
-        
-                break;
-        }
-        
-        
-        if (changed)
-        {
-                node.setDirtyCanvas(true, true);
-        }
+	function removeEmpty(obj)
+	{
+		if (!obj || typeof obj !== "object")
+			return obj;
+
+		for (const key in obj)
+		{
+			const val =
+				removeEmpty(obj[key]);
+
+			if (
+				val == null ||
+				(typeof val === "object" &&
+					Object.keys(val).length === 0)
+			)
+			{
+				delete obj[key];
+			}
+		}
+
+		return obj;
+	}
+
+	removeEmpty(scene);
+
+
+
+	//////////////////////////////////////////////////////////
+	// STEP 5 — Convert to JSON
+	//////////////////////////////////////////////////////////
+
+	const json =
+		JSON.stringify(scene, null, "\t");
+
+
+
+	//////////////////////////////////////////////////////////
+	// STEP 6 — Update preview widget (only if changed)
+	//////////////////////////////////////////////////////////
+
+	if (
+		previewWidget &&
+		previewWidget.value !== json
+	)
+	{
+		previewWidget.value = json;
+
+		if (syncPreviewHeight)
+			syncPreviewHeight();
+	}
+
+
+
+	//////////////////////////////////////////////////////////
+	// STEP 7 — Hidden output widget
+	//////////////////////////////////////////////////////////
+
+	let hiddenOutput =
+		node.widgets.find(
+			w => w.name === "output_json_string"
+		);
+
+	if (!hiddenOutput)
+	{
+		hiddenOutput =
+			node.addWidget(
+				"text",
+				"output_json_string",
+				"",
+				() => {}
+			);
+
+		hiddenOutput.hidden = true;
+		hiddenOutput.computeSize =
+			() => [0, -8];
+		hiddenOutput.draw =
+			() => {};
+	}
+
+	hiddenOutput.value = json;
+
+
+
+	//////////////////////////////////////////////////////////
+	// STEP 8 — Dynamic inputs (CORRECT INDEX-SAFE VERSION)
+	//////////////////////////////////////////////////////////
+
+	const dynamicInputs = node.inputs
+		.map((slot, realIndex) => ({
+			slot,
+			realIndex,
+			index: (
+				slot &&
+				slot.name &&
+				slot.name.startsWith("input_")
+			)
+				? parseInt(slot.name.substring(6)) || 0
+				: -1
+		}))
+		.filter(x => x.index >= 0)
+		.sort((a, b) => a.index - b.index);
+
+
+	if (dynamicInputs.length === 0)
+		return;
+
+
+	let changed = false;
+
+
+	//////////////////////////////////////////////////////////
+	// Add new slot if last is connected
+	//////////////////////////////////////////////////////////
+
+	const last = dynamicInputs[dynamicInputs.length - 1];
+
+	if (last.slot.link != null)
+	{
+		node.addInput(
+			`input_${last.index + 1}`,
+			"PROMPT_VAR"
+		);
+
+		changed = true;
+	}
+
+
+	//////////////////////////////////////////////////////////
+	// Remove trailing empty slots SAFELY using REAL INDEX
+	//////////////////////////////////////////////////////////
+
+	while (dynamicInputs.length > 1)
+	{
+		const lastEntry =
+			dynamicInputs[dynamicInputs.length - 1];
+
+		const prevEntry =
+			dynamicInputs[dynamicInputs.length - 2];
+
+		if (
+			lastEntry.slot.link == null &&
+			prevEntry.slot.link == null
+		)
+		{
+			// find CURRENT real index (important)
+			const currentRealIndex =
+				node.inputs.findIndex(
+					s => s === lastEntry.slot
+				);
+
+			if (currentRealIndex !== -1)
+			{
+				node.removeInput(currentRealIndex);
+
+				dynamicInputs.pop();
+
+				changed = true;
+
+				continue;
+			}
+		}
+
+		break;
+	}
+
+
+	if (changed)
+	{
+		node.setDirtyCanvas(true, true);
+	}
 }
 
 
 
 app.registerExtension({
 
-        name: "Dragos.SceneBuilder.Dynamic",
+	name: "Dragos.SceneBuilder.Dynamic",
 
-        async nodeCreated(node)
-        {
-                if (
-                        node.comfyClass !== "DragosObject"
-                        &&
-                        node.comfyClass !== "DragosSceneCompiler"
-                        &&
-                        node.comfyClass !== "DragosStructuredBuilder"
-                ) return;
+	async nodeCreated(node)
+	{
+		if (
+			node.comfyClass !== "DragosObject"
+			&&
+			node.comfyClass !== "DragosSceneCompiler"
+			&&
+			node.comfyClass !== "DragosStructuredBuilder"
+		) return;
 
-                let previewWidget = null;
-                let syncPreviewHeight = null;
+		let previewWidget = null;
+		let syncPreviewHeight = null;
 
-                if (node.comfyClass === "DragosSceneCompiler")
-                {
-                        previewWidget =
-                                ComfyWidgets.STRING(
-                                        node,
-                                        "preview",
-                                        ["STRING", { multiline: true }],
-                                        app
-                                ).widget;
+		if (node.comfyClass === "DragosSceneCompiler")
+		{
+			previewWidget =
+				ComfyWidgets.STRING(
+					node,
+					"preview",
+					["STRING", { multiline: true }],
+					app
+				).widget;
 
-                        previewWidget.inputEl.readOnly = true;
-                        previewWidget.inputEl.style.fontSize = "11px";
-                        previewWidget.inputEl.style.resize = "none";
-
-
-                        syncPreviewHeight = function()
-						{
-							if (!previewWidget?.inputEl) return;
-							if (!node.size) return;
-						
-							const HEADER = LiteGraph.NODE_TITLE_HEIGHT || 30;
-							const SLOT = LiteGraph.NODE_SLOT_HEIGHT || 20;
-							const WIDGET_SPACING = 4;
-							const BOTTOM_PADDING = 15; // Creates the consistent buffer at the bottom
-						
-							let widgetY = HEADER;
-						
-							// Calculate the Y position where the preview widget starts
-							for (const w of node.widgets)
-							{
-								if (w === previewWidget) break;
-								const size = w.computeSize?.(node.size[0]);
-								widgetY += (size?.[1] || 20) + WIDGET_SPACING;
-							}
-						
-							// Calculate height occupied by inputs on the left
-							// We subtract this to create the "buffer" so the text box doesn't overlap the inputs area
-							const inputCount = node.inputs?.length || 0;
-							const inputsHeight = inputCount * SLOT - SLOT;
-						
-							// Calculate available height
-							// Node Height - (Widgets Above) - (Inputs Height) - (Bottom Padding)
-							const available = node.size[1] - widgetY - inputsHeight - BOTTOM_PADDING;
-						
-							// Set height.
-							// We use Math.max(20) instead of 50. 
-							// This allows the box to be small enough to FIT in small nodes (fixing Image_1)
-							// while the calculation above ensures it stops before the inputs (fixing Image_3).
-							previewWidget.inputEl.style.height = Math.max(available, 20) + "px";
-						};
+			previewWidget.inputEl.readOnly = true;
+			previewWidget.inputEl.style.fontSize = "11px";
+			previewWidget.inputEl.style.resize = "none";
 
 
-                        const origOnResize = node.onResize;
+			syncPreviewHeight = function()
+			{
+				if (!previewWidget?.inputEl) return;
+				if (!node.size) return;
 
-                        node.onResize = function()
-                        {
-                                if (origOnResize)
-                                        origOnResize.apply(this, arguments);
+				const HEADER = LiteGraph.NODE_TITLE_HEIGHT || 30;
+				const SLOT = LiteGraph.NODE_SLOT_HEIGHT || 20;
+				const WIDGET_SPACING = 4;
+				const BOTTOM_PADDING = 15;
 
-                                syncPreviewHeight();
-                        };
+				let widgetY = HEADER;
 
+				for (const w of node.widgets)
+				{
+					if (w === previewWidget) break;
+					const size = w.computeSize?.(node.size[0]);
+					widgetY += (size?.[1] || 20) + WIDGET_SPACING;
+				}
 
-                                                // force correct node size first
-                        requestAnimationFrame(() =>
-                        {
-                                if (node.computeSize)
-                                {
-                                        const newSize = node.computeSize();
-                                        node.setSize(newSize);
-                                }
-                        
-                                syncPreviewHeight();
-                        
-                                node.setDirtyCanvas(true, true);
-                        });
-                        
-                        setTimeout(() =>
-                        {
-                                if (node.computeSize)
-                                {
-                                        const newSize = node.computeSize();
-                                        node.setSize(newSize);
-                                }
-                        
-                                syncPreviewHeight();
-                        
-                                node.setDirtyCanvas(true, true);
-                        
-                        }, 100);
-                }
+				const inputCount = node.inputs?.length || 0;
+				const inputsHeight = inputCount * SLOT - SLOT;
+
+				const available = node.size[1] - widgetY - inputsHeight - BOTTOM_PADDING;
+
+				previewWidget.inputEl.style.height = Math.max(available, 20) + "px";
+			};
 
 
-                const graph = app.graph;
+			const origOnResize = node.onResize;
 
-                const update = () =>
-                        refreshNode(
-                                node,
-                                graph,
-                                previewWidget,
-                                syncPreviewHeight
-                        );
+			node.onResize = function()
+			{
+				if (origOnResize)
+					origOnResize.apply(this, arguments);
 
-
-                const origConnectionsChange = node.onConnectionsChange;
-
-                node.onConnectionsChange = function ()
-                {
-                        if (origConnectionsChange)
-                                origConnectionsChange.apply(this, arguments);
-
-                        update();
-                };
+				syncPreviewHeight();
+			};
 
 
-                const origWidgetChanged = node.onWidgetChanged;
+			// force correct node size first
+			requestAnimationFrame(() =>
+			{
+				if (node.computeSize)
+				{
+					const newSize = node.computeSize();
+					node.setSize(newSize);
+				}
 
-                node.onWidgetChanged = function ()
-                {
-                        if (origWidgetChanged)
-                                origWidgetChanged.apply(this, arguments);
+				syncPreviewHeight();
 
-                        update();
-                };
+				node.setDirtyCanvas(true, true);
+			});
+
+			setTimeout(() =>
+			{
+				if (node.computeSize)
+				{
+					const newSize = node.computeSize();
+					node.setSize(newSize);
+				}
+
+				syncPreviewHeight();
+
+				node.setDirtyCanvas(true, true);
+
+			}, 100);
+		}
 
 
-                const timer = setInterval(() =>
-                {
-                        if (!graph._nodes.includes(node))
-                        {
-                                clearInterval(timer);
-                                return;
-                        }
+		const graph = app.graph;
 
-                        update();
-
-                }, 500);
+		const update = () =>
+			refreshNode(
+				node,
+				graph,
+				previewWidget,
+				syncPreviewHeight
+			);
 
 
-                update();
-        }
+		const origConnectionsChange = node.onConnectionsChange;
+
+		node.onConnectionsChange = function ()
+		{
+			if (origConnectionsChange)
+				origConnectionsChange.apply(this, arguments);
+
+			update();
+		};
+
+
+		const origWidgetChanged = node.onWidgetChanged;
+
+		node.onWidgetChanged = function ()
+		{
+			if (origWidgetChanged)
+				origWidgetChanged.apply(this, arguments);
+
+			update();
+		};
+
+
+		const timer = setInterval(() =>
+		{
+			if (!graph._nodes.includes(node))
+			{
+				clearInterval(timer);
+				return;
+			}
+
+			update();
+
+		}, 500);
+
+
+		update();
+	}
 
 });

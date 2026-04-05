@@ -8,46 +8,6 @@
 	"name":"",
 	"age":"",
 	"from":"",
-	"placement": {
-		"frame_position": [
-			"center",
-			"left",
-			"right",
-			"top",
-			"bottom",
-			"top-left",
-			"top-right",
-			"bottom-left",
-			"bottom-right"
-		],
-		"proximity_to_camera": [
-			"",
-			"foreground",
-			"midground",
-			"background",
-			"close",
-			"medium",
-			"far"
-		],
-		"orientation": [
-			"",
-			"facing camera",
-			"facing left",
-			"facing right",
-			"facing away",
-			"profile left",
-			"profile right",
-			"three-quarter left",
-			"three-quarter right"
-		],
-		"looking_at": [
-			"",
-			"at camera",
-			"away from camera",
-			"other"
-		],
-		"relative_to":  ""
-	},
 	"appearance": {
 		"body_form": [
 			"",
