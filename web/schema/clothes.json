@@ -1,16 +1,142 @@
 {
 	"_meta": {
+		"display_name": "Clothing",
 		"extension": "character"
 	},
 	"clothing": {
 		"nude": ["No", "Yes"],
-		"top": "",
-		"bottom": "",
-		"footwear": "",
-		"accessories": "",
+		"top": {
+			"style": [
+				"",
+				"t-shirt",
+				"blouse",
+				"tank top",
+				"sweater",
+				"hoodie",
+				"jacket",
+				"coat",
+				"dress shirt",
+				"crop top",
+				"other"
+			],
+			"color": "",
+			"material": [
+				"",
+				"cotton",
+				"silk",
+				"leather",
+				"denim",
+				"wool",
+				"lace",
+				"spandex",
+				"other"
+			],
+			"fit": [
+				"",
+				"tight",
+				"fitted",
+				"loose",
+				"baggy",
+				"oversized"
+			],
+			"pattern": [
+				"",
+				"solid",
+				"striped",
+				"plaid",
+				"floral",
+				"graphic",
+				"other"
+			],
+			"description": ""
+		},
+		"bottom": {
+			"style": [
+				"",
+				"jeans",
+				"trousers",
+				"shorts",
+				"skirt",
+				"mini skirt",
+				"leggings",
+				"sweatpants",
+				"other"
+			],
+			"color": "",
+			"material": "",
+			"fit": [
+				"",
+				"tight",
+				"fitted",
+				"loose",
+				"baggy"
+			],
+			"length": [
+				"",
+				"mini",
+				"mid-length",
+				"full length",
+				"ankle length"
+			],
+			"description": ""
+		},
+		"footwear": {
+			"style": [
+				"",
+				"sneakers",
+				"boots",
+				"high heels",
+				"flats",
+				"sandals",
+				"loafers",
+				"barefoot",
+				"other"
+			],
+			"color": "",
+			"material": "",
+			"heel_height": [
+				"",
+				"flat",
+				"low",
+				"medium",
+				"high",
+				"stiletto"
+			],
+			"description": ""
+		},
 		"underwear": {
-			"bra": "",
-			"panties": ""
+			"bra": {
+				"style": [
+					"",
+					"bralette",
+					"push-up",
+					"sports bra",
+					"underwire",
+					"strapless",
+					"bikini top",
+					"none"
+				],
+				"color": "",
+				"material": "",
+				"pattern": "",
+				"description": ""
+			},
+			"panties": {
+				"style": [
+					"",
+					"bikini",
+					"briefs",
+					"thong",
+					"g-string",
+					"boyshorts",
+					"high-waisted",
+					"none"
+				],
+				"color": "",
+				"material": "",
+				"pattern": "",
+				"description": ""
+			}
 		}
 	}
 }

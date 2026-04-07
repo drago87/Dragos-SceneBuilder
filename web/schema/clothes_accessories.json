@@ -1,0 +1,60 @@
+{
+    "_meta": {
+        "display_name": "accessory",
+        "extension": "clothing",
+        "override": "no"
+    },
+    "item_type": [
+        "",
+        "glasses",
+        "sunglasses",
+        "hat",
+        "beanie",
+        "cap",
+        "necklace",
+        "choker",
+        "earrings",
+        "ring",
+        "bracelet",
+        "watch",
+        "anklet",
+        "scarf",
+        "bag",
+        "purse",
+        "backpack",
+        "belt",
+        "hair clip",
+        "hair tie",
+        "gloves",
+        "other"
+    ],
+    "description": "",
+    "color": "",
+    "material": [
+        "",
+        "gold",
+        "silver",
+        "leather",
+        "fabric",
+        "plastic",
+        "metal",
+        "wood",
+        "other"
+    ],
+    "worn_on": [
+        "",
+        "head",
+        "face",
+        "neck",
+        "wrist",
+        "hand",
+        "finger",
+        "arm",
+        "waist",
+        "shoulder",
+        "ankle",
+        "feet",
+        "hair",
+        "other"
+    ]
+}

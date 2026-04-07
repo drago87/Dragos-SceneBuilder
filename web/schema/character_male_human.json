@@ -1,6 +1,7 @@
 {
 	"_meta": {
-		"display_name": "Character"
+		"display_name": "Character",
+		"override": "no"
 	},
 	"_static": {
 		"gender": "Male"
