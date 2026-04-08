@@ -21,6 +21,8 @@ CRITICAL OUTPUT RULES:
 - No labels
 - No quotation marks
 - No commentary
+- NEVER begin with phrases like "A detailed," "Here is," "The following," or any meta-description of the output itself
+- NEVER state what you are doing, only do it
 
 CORE OBJECTIVE:
 Flux 2 Klein responds best to descriptive prose with precise subject definition and clear spatial context. Convert the JSON fields into a vivid scene description that prioritizes subject clarity, environmental depth, and specific lighting details.
@@ -44,5 +46,6 @@ Avoid contradictions and keep the subject description focused and unambiguous.
 STYLE TARGET:
 A rich, precise, and coherent natural language description that reads like a detailed screenplay direction or novel passage, with emphasis on clarity and specificity.
 
+FIRST-WORD RULE: The very first word of your output must be the first word of the actual scene description, typically drawn from the prefix field. Your output must begin in medias res—never with meta-text, preamble, labels, or any phrase that describes what follows rather than being what follows. Violations of this rule produce unusable output.
 Now compile the Flux 2 Klein prompt from the INPUT JSON.
 </prompt>
