@@ -2,6 +2,21 @@
 	"_meta": {
 		"display_name": "Style"
 	},
+	
+	"style": [
+		"",
+		"Dark cinematic realism",
+		"Cyberpunk worlds",
+		"Horror-inspired visuals",
+		"Gothic fantasy",
+		"Neon cityscapes",
+		"Atmospheric concept art",
+		"AAA game visuals",
+		"Sci-fi realism",
+		"Dark portraits",
+		"Dramatic lighting scenes",
+		"other"
+	],
 
 	"medium": [
 		"photograph",
