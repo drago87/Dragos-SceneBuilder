@@ -3,85 +3,109 @@
 		"display_name": "Style"
 	},
 	
-	"art_style": [
-		"",
-		"Dark cinematic realism",
-		"Cyberpunk worlds",
-		"Horror-inspired visuals",
-		"Gothic fantasy",
-		"Neon cityscapes",
-		"Atmospheric concept art",
-		"AAA game visuals",
-		"Sci-fi realism",
-		"Dark portraits",
-		"Dramatic lighting scenes",
-		"other"
-	],
-
-	"medium": [
-		"photograph",
-		"digital art",
-		"painting",
-		"illustration",
-		"render",
-		"clay"
-	],
-
-	"quality": [
-		"low",
-		"medium",
-		"high",
-		"ultra",
-		"masterpiece"
-	],
-
-	"detail": [
-		"simple",
-		"detailed",
-		"highly detailed",
-		"hyper detailed"
-	],
-
-	"realism": [
-		"",
-		"stylized",
-		"semi-realistic",
-		"photorealistic"
-	],
-
-	"art_direction": {
-		"family": [
-			"",
-			"western animation",
-			"anime",
-			"comic book",
-			"storybook",
-			"fantasy art",
-			"sci-fi concept art",
-			"cinematic",
-			"3d animated film"
-		],
-
-		"influence": [
-			"",
-			"disney-like",
-			"pixar-like",
-			"ghibli-like",
-			"dreamworks-like",
-			"anime key visual",
-			"marvel-comic-like",
-			"european fairytale illustration"
-		],
-
-		"tone": [
-			"",
-			"playful",
-			"whimsical",
-			"epic",
-			"dark",
-			"cozy",
-			"magical",
-			"dramatic"
-		]
-	}
+	"style": {
+        "visual_style": [
+            "",
+            "Disney",
+            "Pixar",
+            "Studio Ghibli",
+            "Anime",
+            "Manga",
+            "Chibi",
+            "Realistic",
+            "Semi-Realistic",
+            "Photorealistic",
+            "Hyperrealistic",
+            "Cinematic",
+            "Oil Painting",
+            "Watercolor",
+            "Acrylic",
+            "Gouache",
+            "Charcoal Drawing",
+            "Pencil Sketch",
+            "Ink Wash",
+            "Pastel",
+            "Fresco",
+            "Impressionist",
+            "Expressionist",
+            "Surrealist",
+            "Cubist",
+            "Pop Art",
+            "Art Nouveau",
+            "Art Deco",
+            "Baroque",
+            "Renaissance",
+            "Romanticism",
+            "Ukiyo-e",
+            "Pointillism",
+            "Comic Book",
+            "Graphic Novel",
+            "Cartoon",
+            "Cel-shaded",
+            "Rubber Hose",
+            "Vector Art",
+            "Pixel Art",
+            "Glitch Art",
+            "Low Poly",
+            "Minimalist",
+            "Abstract",
+            "Psychedelic",
+            "Silhouette",
+            "Stained Glass",
+            "Claymation",
+            "Papercraft",
+            "Collage",
+            "Other"
+        ],
+        "genre": [
+            "",
+            "Sci-Fi",
+            "Steam-Punk",
+            "Fantasy",
+            "Cyberpunk",
+            "Medieval",
+            "Post-Apocalyptic",
+            "Western",
+            "Noir",
+            "Solarpunk",
+            "Vaporwave",
+            "Gothic",
+            "High Fantasy",
+            "Dark Fantasy",
+            "Biopunk",
+            "Dieselpunk",
+            "Atompunk",
+            "Retro-Futurism",
+            "Space Opera",
+            "Dystopian",
+            "Utopian",
+            "Horror",
+            "Cosmic Horror",
+            "Supernatural",
+            "Mythological",
+            "Historical",
+            "Urban Fantasy",
+            "Magical Realism",
+            "Mystery",
+            "Espionage",
+            "Military",
+            "Mecha",
+            "Prehistoric",
+            "Nautical",
+            "Wuxia",
+            "Other"
+        ],
+        "dimension": [
+            "",
+            "2D",
+            "2.5D",
+            "3D",
+            "Isometric",
+            "Voxel",
+            "Flat",
+            "Stereoscopic",
+            "Holographic",
+            "Other"
+        ]
+    }
 }
