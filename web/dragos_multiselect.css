@@ -1,0 +1,313 @@
+/* ============================================================
+   Dragos Multi-Select Widget Styles
+   Used by DragosStructuredBuilder for multi-select fields
+   ============================================================ */
+
+.dragos-ms {
+    --ms-bg: #1e1e2e;
+    --ms-surface: #252540;
+    --ms-surface-hover: #2a2a4a;
+    --ms-border: #3a3a5a;
+    --ms-text: #ccc;
+    --ms-text-dim: #888;
+    --ms-text-muted: #555;
+    --ms-accent: #7c6ff0;
+    --ms-accent-dim: #5a4fb8;
+    --ms-danger: #e55;
+    --ms-input-bg: #2a2a3a;
+    --ms-input-border: #555;
+    --ms-radius: 4px;
+    --ms-font: 12px Arial, sans-serif;
+
+    display: flex;
+    flex-direction: column;
+    background: var(--ms-bg);
+    border: 1px solid var(--ms-border);
+    border-radius: 6px;
+    overflow: hidden;
+    font-family: var(--ms-font);
+    color: var(--ms-text);
+    font-size: 12px;
+    min-height: 300px;
+}
+
+/* ---------- Search ---------- */
+.dragos-ms-search {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--ms-border);
+}
+.dragos-ms-search input {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--ms-input-bg);
+    border: 1px solid var(--ms-input-border);
+    border-radius: var(--ms-radius);
+    color: var(--ms-text);
+    padding: 5px 8px;
+    font-size: 11px;
+    outline: none;
+}
+.dragos-ms-search input:focus {
+    border-color: var(--ms-accent);
+}
+.dragos-ms-search input::placeholder {
+    color: var(--ms-text-muted);
+}
+
+/* ---------- Dual panels ---------- */
+.dragos-ms {
+    height: 100%;
+    min-height: 300px;
+}
+
+.dragos-ms-panels {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+	overflow: hidden;
+}
+
+/* Left panel — groups & items */
+.dragos-ms-left {
+    flex: 1 1 220px;
+    overflow-y: auto;
+    min-width: 220px;
+    border-right: 1px solid var(--ms-border);
+}
+.dragos-ms-left::-webkit-scrollbar {
+    width: 5px;
+}
+.dragos-ms-left::-webkit-scrollbar-thumb {
+    background: var(--ms-border);
+    border-radius: 3px;
+}
+
+/* Right panel — selected */
+.dragos-ms-right {
+    width: 170px;
+    min-width: 150px;
+    overflow-y: auto;
+    background: #1a1a2a;
+}
+.dragos-ms-right::-webkit-scrollbar {
+    width: 5px;
+}
+.dragos-ms-right::-webkit-scrollbar-thumb {
+    background: var(--ms-border);
+    border-radius: 3px;
+}
+
+/* ---------- Group headers (dividers) ---------- */
+.dragos-ms-group-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 8px;
+    background: var(--ms-surface);
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid var(--ms-border);
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: var(--ms-text-dim);
+    letter-spacing: 0.4px;
+}
+.dragos-ms-group-header:hover {
+    background: var(--ms-surface-hover);
+}
+.dragos-ms-arrow {
+    font-size: 9px;
+    color: var(--ms-text-muted);
+    width: 10px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.dragos-ms-group-count {
+    margin-left: auto;
+    background: #333;
+    border-radius: 7px;
+    padding: 1px 6px;
+    font-size: 9px;
+    color: #aaa;
+    font-weight: normal;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+/* ---------- Items (checkboxes) ---------- */
+.dragos-ms-group-items {
+    padding: 2px 0;
+}
+.dragos-ms-group-items.collapsed {
+    display: none;
+}
+.dragos-ms-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px 3px 18px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #bbb;
+}
+.dragos-ms-item:hover {
+    background: var(--ms-input-bg);
+}
+.dragos-ms-item input[type="checkbox"] {
+    accent-color: var(--ms-accent);
+    margin: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+}
+.dragos-ms-item mark {
+    background: rgba(124, 111, 240, 0.25);
+    color: #ddd;
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
+/* ---------- Right panel header ---------- */
+.dragos-ms-right-header {
+    padding: 5px 8px;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--ms-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid var(--ms-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dragos-ms-clear-btn {
+    background: none;
+    border: none;
+    color: var(--ms-text-muted);
+    font-size: 9px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 0;
+}
+.dragos-ms-clear-btn:hover {
+    color: var(--ms-danger);
+}
+
+/* ---------- Selected items ---------- */
+.dragos-ms-selected-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: var(--ms-text);
+    gap: 4px;
+}
+.dragos-ms-selected-item:hover {
+    background: var(--ms-input-bg);
+}
+.dragos-ms-selected-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.dragos-ms-remove-btn {
+    background: none;
+    border: none;
+    color: var(--ms-text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.dragos-ms-remove-btn:hover {
+    color: var(--ms-danger);
+}
+
+/* ---------- Weight slider ---------- */
+.dragos-ms-weight {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px 2px 20px;
+    font-size: 10px;
+    color: var(--ms-text-dim);
+}
+.dragos-ms-weight input[type="range"] {
+    flex: 1;
+    accent-color: var(--ms-accent);
+    height: 3px;
+    min-width: 40px;
+    cursor: pointer;
+}
+.dragos-ms-weight-val {
+    min-width: 32px;
+    text-align: right;
+    font-size: 10px;
+    color: var(--ms-accent);
+    font-weight: bold;
+}
+
+/* ---------- Other custom input ---------- */
+.dragos-ms-other-input {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+}
+.dragos-ms-other-label {
+    color: var(--ms-accent);
+    white-space: nowrap;
+    font-size: 10px;
+}
+.dragos-ms-other-input input[type="text"] {
+    flex: 1;
+    background: var(--ms-input-bg);
+    border: 1px solid var(--ms-input-border);
+    border-radius: 3px;
+    color: var(--ms-text);
+    padding: 2px 5px;
+    font-size: 10px;
+    outline: none;
+    min-width: 0;
+}
+.dragos-ms-other-input input[type="text"]:focus {
+    border-color: var(--ms-accent);
+}
+
+/* ---------- Empty states ---------- */
+.dragos-ms-empty {
+    padding: 16px 8px;
+    text-align: center;
+    color: var(--ms-text-muted);
+    font-size: 11px;
+}
+.dragos-ms-no-results {
+    padding: 10px 8px;
+    text-align: center;
+    color: var(--ms-text-muted);
+    font-size: 11px;
+}
+
+/* ---------- Tags preview ---------- */
+.dragos-ms-tags-preview {
+    padding: 5px 8px;
+    border-top: 1px solid var(--ms-border);
+    font-size: 10px;
+    color: var(--ms-text-dim);
+    max-height: 48px;
+    overflow-y: auto;
+    word-break: break-all;
+    line-height: 1.4;
+    background: #1a1a28;
+}
+.dragos-ms-tags-preview span {
+    color: var(--ms-accent);
+}

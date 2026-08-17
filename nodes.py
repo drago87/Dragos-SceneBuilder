@@ -65,7 +65,7 @@ def parse_prompt_file(content: str):
 
 class DragosPromptLoaderNode:
 
-	CATEGORY = "DragosScene"
+	CATEGORY = "Dragos/Scene Builder"
 	RETURN_TYPES = ("STRING",)
 	FUNCTION = "load_prompt"
 
@@ -152,7 +152,7 @@ class DragosVariableNode:
 
 	RETURN_TYPES = (PROMPT_VAR_TYPE,)
 	FUNCTION = "get_text"
-	CATEGORY = "DragosScene"
+	CATEGORY = "Dragos/Scene Builder"
 
 	def get_text(self, var_name, text):
 
@@ -180,7 +180,7 @@ class DragosObjectNode:
 
 	RETURN_TYPES = (PROMPT_VAR_TYPE,)
 	FUNCTION = "build_object"
-	CATEGORY = "DragosScene"
+	CATEGORY = "Dragos/Scene Builder"
 
 	@classmethod
 	def VALIDATE_INPUTS(cls, **kwargs):
@@ -247,7 +247,7 @@ class DragosSceneCompiler:
 	RETURN_TYPES = ("STRING",)
 	OUTPUT_NODE = True
 	FUNCTION = "compile_json"
-	CATEGORY = "DragosScene"
+	CATEGORY = "Dragos/Scene Builder"
 
 	@staticmethod
 	def _unwrap_prompt_var(v):
@@ -302,7 +302,7 @@ class DragosSceneCompiler:
 
 class DragosStructuredBuilderNode:
 
-	CATEGORY = "DragosScene"
+	CATEGORY = "Dragos/Scene Builder"
 	RETURN_TYPES = (PROMPT_VAR_TYPE,)
 	FUNCTION = "build"
 
